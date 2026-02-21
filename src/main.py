@@ -1,7 +1,8 @@
-# Este archivo sirve para inicializar el módulo chatbot y probar la clase Auth
+# main.py - archivo de prueba para login del chatbot
 
-from .auth import Auth
-from .errors import *
+# Import absoluto desde el paquete 'chatbot'
+from chatbot.auth import Auth
+from chatbot.errors import AuthError
 
 def probar_login():
     auth = Auth()
@@ -23,7 +24,7 @@ def probar_login():
         try:
             mensaje = auth.login(username, password)
             print("✅", mensaje)
-        except ErrorAunteticacion as e:
+        except AuthError as e:
             print("❌ Error:", e)
 
 if __name__ == "__main__":

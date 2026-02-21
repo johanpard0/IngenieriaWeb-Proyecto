@@ -1,6 +1,6 @@
 import re
 from .errors import (
-    ErrorAunteticacion,
+    AuthError,
     UsuarioNoEncontrado,
     ContrasenaInvalida,
     ContrasenaNoCumpleFormato,
