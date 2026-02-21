@@ -1,6 +1,6 @@
 # Errores personalizados para la autenticación del chatbot
 
-class ErrorAunteticacion(Exception):
+class AuthError(Exception):
     """Clase base para errores de autenticación."""
     pass
 
