@@ -1,14 +1,12 @@
-# main.py - archivo de prueba para login del chatbot
-
-# Import absoluto desde el paquete 'chatbot'
 from fastapi import FastAPI
 from chatbot.auth import Auth
 from chatbot.errors import AuthError
 
 app = FastAPI()
+
 @app.get("/")
-def home()
-        return {"mensaje": "Mi API esta funcioando"}
+def home():
+    return {"mensaje": "Mi API está funcionando"}
 
 def probar_login():
     auth = Auth()
