@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Catalina | Iniciar sesión</title>
+
+<!-- CSS -->
+<link rel="stylesheet" href="/static/css/styles.css">
+
+</head>
+
+<body>
+
+<!-- HEADER SUPERIOR -->
+
+<div class="header">
+
+<img src="/static/images/Logosimple.png" alt="Logo Catalina">
+
+<span>Catalina</span>
+
+</div>
+
+
+<!-- CONTENEDOR PRINCIPAL -->
+
+<div class="container">
+
+
+<!-- ROBOT IZQUIERDA -->
+
+<div class="robot">
+
+<img src="/static/images/Logosimple.png" alt="Catalina Chatbot">
+
+</div>
+
+
+<!-- LOGIN DERECHA -->
+
+<div class="login">
+
+<h1>Catalina Chatbot</h1>
+
+<p>Universidad Católica de Colombia</p>
+
+<form id="loginForm">
+
+<input 
+type="email"
+id="email"
+placeholder="Correo institucional"
+required
+>
+
+<input
+type="password"
+id="password"
+placeholder="Contraseña"
+required
+>
+
+<span class="show" onclick="togglePassword()">
+Mostrar contraseña
+</span>
+
+<button type="submit">
+Iniciar sesión
+</button>
+
+</form>
+
+
+<div class="links">
+
+¿No tienes cuenta?
+<a href="/register">Crear cuenta</a>
+
+</div>
+
+
+<div class="footer">
+
+Catalina Chatbot © 2026
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<script src="/static/js/app.js"></script>
+
+<script>
+
+/* mostrar contraseña */
+
+function togglePassword(){
+
+const pass=document.getElementById("password")
+
+if(pass.type==="password"){
+
+pass.type="text"
+
+}else{
+
+pass.type="password"
+
+}
+
+}
+
+
+/* login */
+
+document.getElementById("loginForm").addEventListener("submit", async function(e){
+
+e.preventDefault()
+
+const email=document.getElementById("email").value
+const password=document.getElementById("password").value
+
+
+const response = await fetch("/login",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+email:email,
+password:password
+})
+
+})
+
+
+const data = await response.json()
+
+
+if(response.ok){
+
+window.location.href="/chat"
+
+}else{
+
+alert(data.detail || "Error al iniciar sesión")
+
+}
+
+})
+
+</script>
+
+
+</body>
+</html>
