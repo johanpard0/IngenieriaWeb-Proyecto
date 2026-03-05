@@ -8,21 +8,17 @@
 
 <title>Catalina | Iniciar sesión</title>
 
-<!-- CSS -->
 <link rel="stylesheet" href="/static/css/styles.css">
 
 </head>
 
 <body>
 
-<!-- HEADER SUPERIOR -->
+<!-- HEADER -->
 
 <div class="header">
-
 <img src="/static/images/Logosimple.png" alt="Logo Catalina">
-
 <span>Catalina</span>
-
 </div>
 
 
@@ -31,21 +27,18 @@
 <div class="container">
 
 
-<!-- ROBOT IZQUIERDA -->
+<!-- ROBOT -->
 
 <div class="robot">
-
 <img src="/static/images/Logosimple.png" alt="Catalina Chatbot">
-
 </div>
 
 
-<!-- LOGIN DERECHA -->
+<!-- LOGIN -->
 
 <div class="login">
 
 <h1>Catalina Chatbot</h1>
-
 <p>Universidad Católica de Colombia</p>
 
 <form id="loginForm">
@@ -74,59 +67,47 @@ Iniciar sesión
 
 </form>
 
-
 <div class="links">
-
 ¿No tienes cuenta?
 <a href="/register">Crear cuenta</a>
-
 </div>
-
 
 <div class="footer">
-
 Catalina Chatbot © 2026
-
 </div>
 
 </div>
 
 </div>
 
-
-
-<script src="/static/js/app.js"></script>
 
 <script>
 
-/* mostrar contraseña */
+/* Mostrar contraseña */
 
 function togglePassword(){
 
 const pass=document.getElementById("password")
 
 if(pass.type==="password"){
-
 pass.type="text"
-
 }else{
-
 pass.type="password"
-
 }
 
 }
 
 
-/* login */
+/* LOGIN */
 
 document.getElementById("loginForm").addEventListener("submit", async function(e){
 
 e.preventDefault()
 
-const email=document.getElementById("email").value
-const password=document.getElementById("password").value
+const email = document.getElementById("email").value
+const password = document.getElementById("password").value
 
+try{
 
 const response = await fetch("/login",{
 
@@ -137,15 +118,13 @@ headers:{
 },
 
 body:JSON.stringify({
-email:email,
+username:email,
 password:password
 })
 
 })
 
-
 const data = await response.json()
-
 
 if(response.ok){
 
@@ -153,14 +132,19 @@ window.location.href="/chat"
 
 }else{
 
-alert(data.detail || "Error al iniciar sesión")
+alert(data.detail?.msg || data.detail || "Usuario o contraseña incorrectos")
+
+}
+
+}catch(error){
+
+alert("Error conectando con el servidor")
 
 }
 
 })
 
 </script>
-
 
 </body>
 </html>
