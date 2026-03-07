@@ -1,106 +1,99 @@
 <!DOCTYPE html>
 <html lang="es">
-
+ 
 <head>
-
+ 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+ 
 <title>Catalina | Iniciar sesión</title>
-
+ 
 <link rel="stylesheet" href="/static/css/styles.css">
-
+ 
 </head>
-
+ 
 <body>
-
+ 
 <!-- HEADER -->
-
+ 
 <div class="header">
 <img src="/static/images/Logosimple.png" alt="Logo Catalina">
 <span>Catalina</span>
 </div>
-
-
+ 
+ 
 <!-- CONTENEDOR PRINCIPAL -->
-
+ 
 <div class="container">
-
-
+ 
+ 
 <!-- ROBOT -->
-
+ 
 <div class="robot">
 <img src="/static/images/Logosimple.png" alt="Catalina Chatbot">
 </div>
-
-
+ 
+ 
 <!-- LOGIN -->
-
+ 
 <div class="login">
-
+ 
 <h1>Catalina Chatbot</h1>
 <p>Universidad Católica de Colombia</p>
-
+ 
 <form id="loginForm">
-
-<input 
+ 
+<input
 type="email"
 id="email"
 placeholder="Correo institucional"
 required
 >
-
+ 
 <input
 type="password"
 id="password"
 placeholder="Contraseña"
 required
 >
-
+ 
 <span class="show" onclick="togglePassword()">
 Mostrar contraseña
 </span>
-
+ 
 <button type="submit">
 Iniciar sesión
 </button>
-
+ 
 </form>
-
+ 
 <div class="links">
 ¿No tienes cuenta?
 <a href="/register">Crear cuenta</a>
 </div>
-
+ 
 <div class="footer">
 Catalina Chatbot © 2026
 </div>
-
+ 
 </div>
-
+ 
 </div>
-
 
 <script>
 
-/* Mostrar contraseña */
+document.addEventListener("DOMContentLoaded", function(){
 
 function togglePassword(){
-
 const pass=document.getElementById("password")
-
-if(pass.type==="password"){
-pass.type="text"
-}else{
-pass.type="password"
+pass.type = pass.type === "password" ? "text" : "password"
 }
 
-}
+window.togglePassword = togglePassword
 
+const form = document.getElementById("loginForm")
 
-/* LOGIN */
-
-document.getElementById("loginForm").addEventListener("submit", async function(e){
+form.addEventListener("submit", async function(e){
 
 e.preventDefault()
 
@@ -132,7 +125,7 @@ window.location.href="/chat"
 
 }else{
 
-alert(data.detail?.msg || data.detail || "Usuario o contraseña incorrectos")
+alert(data.detail || "Usuario o contraseña incorrectos")
 
 }
 
@@ -144,7 +137,8 @@ alert("Error conectando con el servidor")
 
 })
 
-</script>
+})
 
+</script>
 </body>
 </html>

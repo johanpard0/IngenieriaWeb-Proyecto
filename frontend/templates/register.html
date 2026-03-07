@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalina | Registro</title>
+<link rel="stylesheet" href="/static/css/styles.css">
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="robot">
+    <img src="/static/images/Logosimple.png" alt="Catalina">
+  </div>
+
+  <div class="login">
+
+    <h1>Crear cuenta</h1>
+    <p>Catalina Chatbot</p>
+
+    <form id="registerForm">
+
+      <input
+        type="email"
+        id="username"
+        placeholder="Correo institucional"
+        required
+      >
+
+      <input
+        type="password"
+        id="password"
+        placeholder="Contraseña"
+        required
+      >
+
+      <button type="submit">
+        Crear cuenta
+      </button>
+
+    </form>
+
+    <div class="links">
+      ¿Ya tienes cuenta?
+      <a href="/">Iniciar sesión</a>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+  const form = document.getElementById("registerForm")
+
+  form.addEventListener("submit", async function(e){
+
+    e.preventDefault()
+
+    const username = document.getElementById("username").value
+    const password = document.getElementById("password").value
+
+    try{
+
+      const response = await fetch("/register",{
+
+        method:"POST",
+
+        headers:{
+          "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+          username: username,
+          password: password
+        })
+
+      })
+
+      const data = await response.json()
+
+      if(response.ok){
+
+        alert(data.message || "Usuario creado correctamente")
+
+        // volver al login
+        window.location.href="/"
+
+      }else{
+
+        alert(data.detail || "Error al registrar usuario")
+
+      }
+
+    }catch(error){
+
+      alert("Error conectando con el servidor")
+
+    }
+
+  })
+
+})
+
+</script>
+
+</body>
+</html>
