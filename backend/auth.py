@@ -1,51 +1,71 @@
-from sqlalchemy.orm import Session
+import csv
+import os
 from fastapi import HTTPException
-
-from backend.models import User
 from backend.schemas import UserCreate
-from backend.security import hash_password, verify_password
+
+FILE = "users.csv"
 
 
-def register_user(db: Session, user: UserCreate):
+def read_users():
 
-    existing_user = db.query(User).filter(User.username == user.username).first()
+    if not os.path.exists(FILE):
+        return []
 
-    if existing_user:
-        raise HTTPException(
-            status_code=400,
-            detail="El usuario ya existe"
-        )
+    users = []
 
-    new_user = User(
-        username=user.username,
-        password=hash_password(user.password)
+    with open(FILE, newline="") as f:
+        reader = csv.DictReader(f)
+
+        for row in reader:
+            users.append(row)
+
+    return users
+
+
+def save_user(username, password):
+
+    file_exists = os.path.exists(FILE)
+
+    with open(FILE, "a", newline="") as f:
+
+        fieldnames = ["username", "password"]
+
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+
+        if not file_exists:
+            writer.writeheader()
+
+        writer.writerow({
+            "username": username,
+            "password": password
+        })
+
+
+def register_user(user: UserCreate):
+
+    users = read_users()
+
+    for u in users:
+        if u["username"] == user.username:
+            raise HTTPException(
+                status_code=400,
+                detail="El usuario ya existe"
+            )
+
+    save_user(user.username, user.password)
+
+    return {"message": "Usuario creado correctamente"}
+
+
+def login_user(username: str, password: str):
+
+    users = read_users()
+
+    for u in users:
+        if u["username"] == username and u["password"] == password:
+            return {"message": "Login exitoso"}
+
+    raise HTTPException(
+        status_code=401,
+        detail="Usuario o contraseña incorrectos"
     )
-
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-
-    return {
-        "message": "Usuario registrado correctamente"
-    }
-
-
-def login_user(db: Session, username: str, password: str):
-
-    user = db.query(User).filter(User.username == username).first()
-
-    if not user:
-        raise HTTPException(
-            status_code=404,
-            detail="Usuario no encontrado"
-        )
-
-    if not verify_password(password, user.password):
-        raise HTTPException(
-            status_code=401,
-            detail="Contraseña incorrecta"
-        )
-
-    return {
-        "message": "Login exitoso"
-    }
