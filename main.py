@@ -42,3 +42,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 @app.post("/login")
 def login(user: UserLogin, db: Session = Depends(get_db)):
     return login_user(db, user.username, user.password)
+
+@app.get("/chat", response_class=HTMLResponse)
+def chat_page(request: Request):
+    return templates.TemplateResponse("chat.html", {"request": request})

@@ -1,17 +1,125 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Catalina Chat</title>
-  <link rel="stylesheet" href="/static/css/styles.css">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Catalina Chat</title>
+
+<link rel="stylesheet" href="/static/css/chat.css">
+
 </head>
+
 <body>
-  <div style="display:flex;justify-content:center;align-items:center;height:100vh;color:white;">
-    <div style="text-align:center;">
-      <h1>Bienvenido a Catalina 🤖</h1>
-      <p>Ya estás dentro del sistema</p>
-      <a href="/">Volver al login</a>
-    </div>
-  </div>
+
+<div class="layout">
+
+<!-- ================= LEFT PANEL ================= -->
+
+<div class="left-panel">
+
+<h2>Archivos</h2>
+
+<button class="upload">Subir archivo</button>
+
+<ul class="files">
+<li>📄 Documento.pdf</li>
+<li>📊 Excel.xlsx</li>
+<li>🖼 Imagen.png</li>
+<li>🌐 Página web</li>
+</ul>
+
+</div>
+
+
+<!-- ================= CHAT ================= -->
+
+<div class="chat-panel">
+
+<div class="chat-header">
+
+<img src="/static/images/Logosimple.png">
+<span>Catalina Chatbot</span>
+
+</div>
+
+<div class="chat-messages" id="chatMessages">
+
+<div class="bot-message">
+Hola 👋 soy Catalina, tu asistente de la Universidad Católica.
+</div>
+
+</div>
+
+<div class="chat-input">
+
+<input 
+type="text"
+id="messageInput"
+placeholder="Escribe tu mensaje..."
+>
+
+<button onclick="sendMessage()">
+Enviar
+</button>
+
+</div>
+
+</div>
+
+
+<!-- ================= TOOLS ================= -->
+
+<div class="right-panel">
+
+<h2>Herramientas</h2>
+
+<button>Generar Word</button>
+<button>Crear Excel</button>
+<button>Exportar PDF</button>
+<button>Crear presentación</button>
+
+</div>
+
+</div>
+
+<script>
+
+function sendMessage(){
+
+const input = document.getElementById("messageInput")
+const message = input.value
+
+if(message.trim() === "") return
+
+const chat = document.getElementById("chatMessages")
+
+const userMsg = document.createElement("div")
+userMsg.className="user-message"
+userMsg.textContent = message
+
+chat.appendChild(userMsg)
+
+input.value=""
+
+setTimeout(()=>{
+
+const botMsg = document.createElement("div")
+botMsg.className="bot-message"
+botMsg.textContent="Catalina está trabajando en tu solicitud..."
+
+chat.appendChild(botMsg)
+
+chat.scrollTop = chat.scrollHeight
+
+},800)
+
+}
+
+</script>
+
 </body>
+
 </html>
