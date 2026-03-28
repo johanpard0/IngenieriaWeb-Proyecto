@@ -9,34 +9,41 @@ from backend.documento_schema import Documento
 
 app = FastAPI(title="Catalina API")
 
-# static
+# Archivos estáticos
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 
-# templates
+# Templates
 templates = Jinja2Templates(directory="frontend/templates")
 
-# "Base de datos" temporal en memoria
+# Base de datos temporal
 documentos_db = []
 
 
 # =========================
-# RUTAS DEL PROYECTO ACTUAL
+# RUTAS HTML (VERSIÓN SEGURA)
 # =========================
 
 @app.get("/", response_class=HTMLResponse)
 def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    template = templates.get_template("login.html")
+    return HTMLResponse(template.render(request=request))
 
 
 @app.get("/register", response_class=HTMLResponse)
 def register_page(request: Request):
-    return templates.TemplateResponse("register.html", {"request": request})
+    template = templates.get_template("register.html")
+    return HTMLResponse(template.render(request=request))
 
 
 @app.get("/chat", response_class=HTMLResponse)
 def chat_page(request: Request):
-    return templates.TemplateResponse("chat.html", {"request": request})
+    template = templates.get_template("chat.html")
+    return HTMLResponse(template.render(request=request))
 
+
+# =========================
+# AUTH
+# =========================
 
 @app.post("/register")
 def register(user: UserCreate):
@@ -49,16 +56,14 @@ def login(user: UserLogin):
 
 
 # =========================
-# RUTAS NUEVAS DEL TALLER
+# DOCUMENTOS
 # =========================
 
-# 1. Endpoint lectura total (GET)
 @app.get("/documentos")
 def obtener_documentos():
     return documentos_db
 
 
-# 2. Endpoint creación (POST)
 @app.post("/documentos")
 def crear_documento(documento: Documento):
     for doc in documentos_db:
@@ -72,11 +77,10 @@ def crear_documento(documento: Documento):
     }
 
 
-# 5. Filtrado dinámico (Query Parameter)
 @app.get("/documentos/filtro/buscar")
 def filtrar_documentos(
-    categoria: str | None = Query(default=None, description="Filtrar por categoría"),
-    activo: bool | None = Query(default=None, description="Filtrar por estado activo/inactivo")
+    categoria: str | None = Query(default=None),
+    activo: bool | None = Query(default=None)
 ):
     resultados = documentos_db
 
@@ -95,8 +99,6 @@ def filtrar_documentos(
     return resultados
 
 
-# 3. Endpoint búsqueda específica (Path Parameter)
-# 4. Lógica de Error con HTTPException 404
 @app.get("/documentos/{id}")
 def obtener_documento_por_id(id: int):
     for doc in documentos_db:
