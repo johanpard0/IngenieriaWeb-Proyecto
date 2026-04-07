@@ -1,31 +1,72 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
 <meta charset="UTF-8">
-<title>Catalina Chatbot</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalina | Dashboard</title>
 <link rel="stylesheet" href="/static/css/styles.css">
-
 </head>
 
-<body style="display:flex;align-items:center;justify-content:center;height:100vh;color:white;">
+<body>
 
-<div style="text-align:center">
+<!-- HEADER -->
+<div class="header">
+  <img src="/static/images/Logosimple.png">
+  <span>Catalina</span>
+</div>
 
-<h1>Bienvenido a Catalina 🤖</h1>
+<!-- CONTENIDO -->
+<div class="container dashboard">
 
-<p>Has iniciado sesión correctamente</p>
+  <h1>Bienvenida a Catalina 👋</h1>
+  <p>Tu asistente universitario inteligente</p>
 
-<a href="/">
-<button style="margin-top:20px;padding:10px 20px;">
-Cerrar sesión
-</button>
-</a>
+  <!-- CARDS -->
+  <div class="cards">
+
+    <!-- CHAT -->
+    <div class="card" onclick="go('/chat')">
+      <div class="icon">💬</div>
+      <h3>Chat Inteligente</h3>
+      <p>Resuelve dudas académicas y administrativas</p>
+    </div>
+
+    <!-- DOCUMENTOS -->
+    <div class="card" onclick="tool('Documento')">
+      <div class="icon">📄</div>
+      <h3>Generar Documentos</h3>
+      <p>Crea archivos como Word, PDF o Excel</p>
+    </div>
+
+    <!-- UBICACIÓN -->
+    <div class="card" onclick="tool('Ubicación')">
+      <div class="icon">📍</div>
+      <h3>Ubicación</h3>
+      <p>Encuentra salones y oficinas fácilmente</p>
+    </div>
+
+    <!-- INFORMACIÓN -->
+    <div class="card" onclick="tool('Información')">
+      <div class="icon">📚</div>
+      <h3>Información Académica</h3>
+      <p>Consulta reglamentos y procesos</p>
+    </div>
+
+  </div>
 
 </div>
 
-</body>
+<script>
 
+function go(url){
+  window.location.href = url
+}
+
+function tool(tipo){
+  alert("Funcionalidad de " + tipo + " en desarrollo 🚀")
+}
+
+</script>
+
+</body>
 </html>

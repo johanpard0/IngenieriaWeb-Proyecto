@@ -7,7 +7,6 @@ FILE = "users.csv"
 
 
 def read_users():
-
     if not os.path.exists(FILE):
         return []
 
@@ -15,20 +14,19 @@ def read_users():
 
     with open(FILE, newline="") as f:
         reader = csv.DictReader(f)
-
         for row in reader:
             users.append(row)
 
     return users
 
 
-def save_user(username, password):
+def save_user(nombre, cedula, username, password):
 
     file_exists = os.path.exists(FILE)
 
     with open(FILE, "a", newline="") as f:
 
-        fieldnames = ["username", "password"]
+        fieldnames = ["nombre", "cedula", "username", "password"]
 
         writer = csv.DictWriter(f, fieldnames=fieldnames)
 
@@ -36,6 +34,8 @@ def save_user(username, password):
             writer.writeheader()
 
         writer.writerow({
+            "nombre": nombre,
+            "cedula": cedula,
             "username": username,
             "password": password
         })
@@ -52,7 +52,7 @@ def register_user(user: UserCreate):
                 detail="El usuario ya existe"
             )
 
-    save_user(user.username, user.password)
+    save_user(user.nombre, user.cedula, user.username, user.password)
 
     return {"message": "Usuario creado correctamente"}
 

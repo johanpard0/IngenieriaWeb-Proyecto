@@ -1,35 +1,34 @@
 body{
 margin:0;
-font-family:Arial, Helvetica, sans-serif;
-background:#f4f4f4;
+font-family:Arial;
+background:#f5f7fb;
 }
 
+/* LAYOUT */
 .layout{
 display:flex;
 height:100vh;
 }
 
 /* LEFT PANEL */
-
 .left-panel{
 width:20%;
-background:#4b2e1e;
+background:#0b2a4a;
 color:white;
 padding:20px;
-}
-
-.left-panel h2{
-margin-bottom:20px;
+display:flex;
+flex-direction:column;
 }
 
 .upload{
 width:100%;
 padding:10px;
-background:#a67b5b;
+background:#1e4e8c;
 border:none;
 color:white;
 cursor:pointer;
 margin-bottom:20px;
+border-radius:6px;
 }
 
 .files{
@@ -42,7 +41,6 @@ margin-bottom:10px;
 }
 
 /* CHAT */
-
 .chat-panel{
 width:60%;
 display:flex;
@@ -50,8 +48,9 @@ flex-direction:column;
 background:white;
 }
 
+/* HEADER */
 .chat-header{
-background:#5c3a21;
+background:#1e4e8c;
 color:white;
 padding:15px;
 display:flex;
@@ -60,32 +59,37 @@ gap:10px;
 }
 
 .chat-header img{
-width:40px;
+width:35px;
 }
 
+/* MENSAJES */
 .chat-messages{
 flex:1;
 padding:20px;
 overflow-y:auto;
+display:flex;
+flex-direction:column;
+gap:10px;
 }
 
+/* MENSAJES */
 .user-message{
-background:#d7ccc8;
+background:#3f7ccf;
+color:white;
 padding:10px;
-margin-bottom:10px;
-border-radius:8px;
+border-radius:10px;
 align-self:flex-end;
 max-width:60%;
 }
 
 .bot-message{
-background:#eee;
+background:#e5e7eb;
 padding:10px;
-margin-bottom:10px;
-border-radius:8px;
+border-radius:10px;
 max-width:60%;
 }
 
+/* INPUT */
 .chat-input{
 display:flex;
 padding:15px;
@@ -102,17 +106,17 @@ border-radius:6px;
 .chat-input button{
 margin-left:10px;
 padding:10px 20px;
-background:#5c3a21;
+background:#1e4e8c;
 color:white;
 border:none;
 cursor:pointer;
+border-radius:6px;
 }
 
 /* RIGHT PANEL */
-
 .right-panel{
 width:20%;
-background:#fafafa;
+background:#ffffff;
 padding:20px;
 border-left:1px solid #ddd;
 }
@@ -121,8 +125,59 @@ border-left:1px solid #ddd;
 width:100%;
 padding:10px;
 margin-bottom:10px;
-background:#a67b5b;
+background:#3f7ccf;
 border:none;
 color:white;
+cursor:pointer;
+border-radius:6px;
+}
+
+/* PERFIL */
+.user-profile{
+position:absolute;
+top:15px;
+right:20px;
+z-index:1000;
+}
+
+.avatar{
+width:40px;
+height:40px;
+background:#1e4e8c;
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:50%;
+cursor:pointer;
+font-size:18px;
+}
+
+.dropdown{
+display:none;
+position:absolute;
+top:50px;
+right:0;
+background:white;
+color:black;
+border-radius:8px;
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+padding:10px;
+width:160px;
+}
+
+.dropdown p{
+margin:0;
+margin-bottom:10px;
+font-weight:bold;
+}
+
+.dropdown button{
+width:100%;
+padding:8px;
+border:none;
+background:#1e4e8c;
+color:white;
+border-radius:6px;
 cursor:pointer;
 }

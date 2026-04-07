@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,36 +9,53 @@
 
 <body>
 
-<div class="container">
+<div class="header">
+  <img src="/static/images/Logosimple.png">
+  <span>Catalina</span>
+</div>
 
-  <div class="robot">
-    <img src="/static/images/Logosimple.png" alt="Catalina">
-  </div>
+<div class="main">
 
-  <div class="login">
+  <div class="login register-box">
+
+    <div class="logo">
+      <img src="/static/images/Logosimple.png">
+    </div>
 
     <h1>Crear cuenta</h1>
-    <p>Catalina Chatbot</p>
+    <p>Registro de usuario</p>
 
     <form id="registerForm">
 
-      <input
-        type="email"
-        id="username"
+      <input 
+        type="text" 
+        id="nombre" 
+        placeholder="Nombre completo"
+        required
+      >
+
+      <input 
+        type="text" 
+        id="cedula" 
+        placeholder="Cédula"
+        required
+      >
+
+      <input 
+        type="email" 
+        id="username" 
         placeholder="Correo institucional"
         required
       >
 
-      <input
-        type="password"
-        id="password"
+      <input 
+        type="password" 
+        id="password" 
         placeholder="Contraseña"
         required
       >
 
-      <button type="submit">
-        Crear cuenta
-      </button>
+      <button type="submit">Registrar</button>
 
     </form>
 
@@ -54,56 +70,63 @@
 
 <script>
 
-document.addEventListener("DOMContentLoaded", function(){
+const nombre = document.getElementById("nombre")
+const cedula = document.getElementById("cedula")
+const correo = document.getElementById("username")
 
-  const form = document.getElementById("registerForm")
+// VALIDACIÓN NOMBRE
+nombre.addEventListener("input", () => {
+  if (!nombre.value.match(/^[A-Za-zÁÉÍÓÚáéíóúñÑ ]*$/)) {
+    nombre.setCustomValidity("Solo se permiten letras")
+  } else {
+    nombre.setCustomValidity("")
+  }
+})
 
-  form.addEventListener("submit", async function(e){
+// VALIDACIÓN CÉDULA
+cedula.addEventListener("input", () => {
+  if (!cedula.value.match(/^[0-9]*$/)) {
+    cedula.setCustomValidity("Solo se permiten números")
+  } else {
+    cedula.setCustomValidity("")
+  }
+})
 
-    e.preventDefault()
+// VALIDACIÓN CORREO INSTITUCIONAL
+correo.addEventListener("input", () => {
+  if (!correo.value.endsWith("@ucatolica.edu.co")) {
+    correo.setCustomValidity("Debe ser correo institucional @ucatolica.edu.co")
+  } else {
+    correo.setCustomValidity("")
+  }
+})
 
-    const username = document.getElementById("username").value
-    const password = document.getElementById("password").value
+// ENVÍO FORMULARIO
+document.getElementById("registerForm").addEventListener("submit", async function(e){
 
-    try{
+  e.preventDefault()
 
-      const response = await fetch("/register",{
+  const dataUser = {
+    nombre: nombre.value,
+    cedula: cedula.value,
+    username: correo.value,
+    password: document.getElementById("password").value
+  }
 
-        method:"POST",
-
-        headers:{
-          "Content-Type":"application/json"
-        },
-
-        body:JSON.stringify({
-          username: username,
-          password: password
-        })
-
-      })
-
-      const data = await response.json()
-
-      if(response.ok){
-
-        alert(data.message || "Usuario creado correctamente")
-
-        // volver al login
-        window.location.href="/"
-
-      }else{
-
-        alert(data.detail || "Error al registrar usuario")
-
-      }
-
-    }catch(error){
-
-      alert("Error conectando con el servidor")
-
-    }
-
+  const response = await fetch("/register",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(dataUser)
   })
+
+  const data = await response.json()
+
+  if(response.ok){
+    alert("Usuario creado correctamente")
+    window.location.href="/"
+  }else{
+    alert(data.detail)
+  }
 
 })
 

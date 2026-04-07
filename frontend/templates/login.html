@@ -1,144 +1,76 @@
 <!DOCTYPE html>
 <html lang="es">
- 
 <head>
- 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
- 
-<title>Catalina | Iniciar sesión</title>
- 
+<title>Catalina | Login</title>
 <link rel="stylesheet" href="/static/css/styles.css">
- 
 </head>
- 
+
 <body>
- 
-<!-- HEADER -->
- 
+
 <div class="header">
-<img src="/static/images/Logosimple.png" alt="Logo Catalina">
-<span>Catalina</span>
+  <img src="/static/images/Logosimple.png">
+  <span>Catalina</span>
 </div>
- 
- 
-<!-- CONTENEDOR PRINCIPAL -->
- 
-<div class="container">
- 
- 
-<!-- ROBOT -->
- 
-<div class="robot">
-<img src="/static/images/Logosimple.png" alt="Catalina Chatbot">
-</div>
- 
- 
-<!-- LOGIN -->
- 
-<div class="login">
- 
-<h1>Catalina Chatbot</h1>
-<p>Universidad Católica de Colombia</p>
- 
-<form id="loginForm">
- 
-<input
-type="email"
-id="email"
-placeholder="Correo institucional"
-required
->
- 
-<input
-type="password"
-id="password"
-placeholder="Contraseña"
-required
->
- 
-<span class="show" onclick="togglePassword()">
-Mostrar contraseña
-</span>
- 
-<button type="submit">
-Iniciar sesión
-</button>
- 
-</form>
- 
-<div class="links">
-¿No tienes cuenta?
-<a href="/register">Crear cuenta</a>
-</div>
- 
-<div class="footer">
-Catalina Chatbot © 2026
-</div>
- 
-</div>
- 
+
+<div class="main">
+
+  <div class="login">
+
+    <div class="logo">
+      <img src="/static/images/Logosimple.png">
+    </div>
+
+    <h1>Iniciar sesión</h1>
+    <p>Universidad Católica de Colombia</p>
+
+    <form id="loginForm">
+
+      <input type="email" id="email" placeholder="Correo institucional" required>
+
+      <input type="password" id="password" placeholder="Contraseña" required>
+
+      <button type="submit">Ingresar</button>
+
+    </form>
+
+    <div class="links">
+      ¿No tienes cuenta?
+      <a href="/register">Crear cuenta</a>
+    </div>
+
+  </div>
+
 </div>
 
 <script>
+document.getElementById("loginForm").addEventListener("submit", async function(e){
 
-document.addEventListener("DOMContentLoaded", function(){
+  e.preventDefault()
 
-function togglePassword(){
-const pass=document.getElementById("password")
-pass.type = pass.type === "password" ? "text" : "password"
-}
+  const email = document.getElementById("email").value
+  const password = document.getElementById("password").value
 
-window.togglePassword = togglePassword
+  const response = await fetch("/login",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      username: email,
+      password: password
+    })
+  })
 
-const form = document.getElementById("loginForm")
+  const data = await response.json()
 
-form.addEventListener("submit", async function(e){
-
-e.preventDefault()
-
-const email = document.getElementById("email").value
-const password = document.getElementById("password").value
-
-try{
-
-const response = await fetch("/login",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-username:email,
-password:password
-})
+  if(response.ok){
+    window.location.href="/chat"
+  }else{
+    alert(data.detail)
+  }
 
 })
-
-const data = await response.json()
-
-if(response.ok){
-
-window.location.href="/chat"
-
-}else{
-
-alert(data.detail || "Usuario o contraseña incorrectos")
-
-}
-
-}catch(error){
-
-alert("Error conectando con el servidor")
-
-}
-
-})
-
-})
-
 </script>
+
 </body>
 </html>
