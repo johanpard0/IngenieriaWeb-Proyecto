@@ -2,6 +2,8 @@ from fastapi import FastAPI, Request, HTTPException, Query
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from pydantic import BaseModel
+import random
 
 from backend.schemas import UserCreate, UserLogin
 from backend.auth import register_user, login_user
@@ -18,6 +20,29 @@ templates = Jinja2Templates(directory="frontend/templates")
 # Base de datos temporal
 documentos_db = []
 
+# Respuestas predefinidas del chatbot
+responses = {
+    "saludos": [
+        "¡Hola! ¿En qué puedo ayudarte?",
+        "¡Hola! Soy Catalina, tu asistente virtual.",
+        "¡Hola! ¿Cómo puedo asistirte hoy?"
+    ],
+    "horarios": [
+        "Los horarios de los salones están disponibles en el portal de la universidad.",
+        "Puedes revisar los horarios de los salones en la plataforma de la universidad.",
+        "Los horarios de clases se publican en el portal de la universidad."
+    ],
+    "salones": [
+        "Los salones se encuentran en varios edificios de la universidad. ¿Te gustaría saber más sobre alguno?",
+        "Puedes ver los detalles de los salones en el portal web de la universidad.",
+        "¿Te gustaría saber sobre los salones disponibles?"
+    ],
+    "profesores": [
+        "Los profesores están disponibles a través del portal. ¿Quieres saber sobre alguno en particular?",
+        "Puedes consultar la información de los profesores en el portal de la universidad.",
+        "¿Hay algún profesor sobre el que quieras saber más?"
+    ]
+}
 
 # =========================
 # RUTAS HTML (VERSIÓN SEGURA)
@@ -106,3 +131,29 @@ def obtener_documento_por_id(id: int):
             return doc
 
     raise HTTPException(status_code=404, detail="Documento no encontrado")
+
+
+# =========================
+# CHATBOT
+# =========================
+
+class ChatMessage(BaseModel):
+    message: str
+
+@app.post("/chat/send")
+async def chatbot_response(chat_message: ChatMessage):
+    user_message = chat_message.message.lower()  # Convertir a minúsculas para comparar sin distinción de mayúsculas
+
+    # Responder en función de las palabras clave en el mensaje
+    if "hola" in user_message or "buenos días" in user_message or "hey" in user_message:
+        response = random.choice(responses["saludos"])
+    elif "horario" in user_message or "clases" in user_message:
+        response = random.choice(responses["horarios"])
+    elif "salon" in user_message:
+        response = random.choice(responses["salones"])
+    elif "profesor" in user_message:
+        response = random.choice(responses["profesores"])
+    else:
+        response = "Lo siento, no entendí tu mensaje. ¿En qué más puedo ayudarte?"
+
+    return {"respuesta": response}

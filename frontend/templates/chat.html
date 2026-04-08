@@ -11,64 +11,113 @@
 <body>
 
 <div class="layout">
-
     <!-- LEFT PANEL -->
     <div class="left-panel">
         <h2>Archivos</h2>
-        <button class="upload" onclick="subirArchivo()">Subir archivo</button>  <!-- Botón para subir archivo -->
-        <ul class="files">
-            <!-- Lista de archivos subidos -->
-        </ul>
+        <input type="file" id="fileInput">
+        <label for="fileInput" id="fileLabel">Seleccionar archivo</label>
+        <button onclick="uploadFile()">Subir archivo</button>
     </div>
 
     <!-- CHAT -->
     <div class="chat-panel">
-
-        <!-- HEADER -->
         <div class="chat-header">
             <img src="/static/images/Logosimple.png" alt="Logo Catalina">
             <span>Catalina Chatbot</span>
 
-            <!-- Avatar y Menu -->
-            <div class="user-profile">
-                <div class="avatar" onclick="toggleDropdown()">
-                    <span>U</span> <!-- Aquí puedes poner una inicial o una imagen de avatar -->
-                </div>
-                <div class="dropdown" id="dropdownMenu">
-                    <p>Usuario</p>
-                    <button onclick="cerrarSesion()">Cerrar sesión</button>
+            <!-- Avatar de usuario en la parte superior derecha -->
+            <div class="user-profile" onclick="toggleDropdown()">
+                <div class="avatar">U</div> <!-- Avatar con inicial del usuario -->
+                <div id="dropdown" class="dropdown">
+                    <p id="userName">Usuario: </p>
+                    <button onclick="logout()">Cerrar sesión</button>
                 </div>
             </div>
         </div>
 
         <div class="chat-messages" id="chatMessages">
             <div class="bot-message">
-                Hola 👋 soy Catalina, ¿en qué puedo ayudarte?
+                ¡Hola! Soy Catalina, ¿en qué puedo ayudarte?
             </div>
         </div>
 
         <div class="chat-input">
-            <input type="text" id="messageInput" placeholder="Escribe tu mensaje..." />
-            <button onclick="sendMessage()">Enviar</button>  <!-- Botón de enviar -->
+            <input type="text" id="messageInput" placeholder="Escribe tu mensaje..." onkeypress="checkEnter(event)">
+            <button onclick="sendMessage()">Enviar</button>
         </div>
-
     </div>
 
     <!-- RIGHT PANEL -->
     <div class="right-panel">
         <h2>Herramientas</h2>
-        <button onclick="generarPDF()">Exportar PDF</button>  <!-- Botón para exportar PDF -->
-        <button onclick="verSalones()">Ver Salones</button>  <!-- Botón para ver salones -->
-        <button onclick="verProfesores()">Ver Profesores</button>  <!-- Botón para ver profesores -->
-        <button onclick="llenarFormulario()">Llenar Formulario</button>  <!-- Botón para llenar formulario -->
-        <button onclick="verHistorial()">Historial de Consultas</button>  <!-- Botón para historial -->
-        <button onclick="contactarSoporte()">Contactar Soporte</button>  <!-- Botón para contactar soporte -->
+        <button class="tool-btn" onclick="generarPDF()">Exportar PDF</button>
+        <button class="tool-btn" onclick="verSalones()">Ver Salones</button>
+        <button class="tool-btn" onclick="verProfesores()">Ver Profesores</button>
+        <button class="tool-btn" onclick="llenarFormulario()">Llenar Formulario</button>
+        <button class="tool-btn" onclick="verHistorial()">Historial de Consultas</button>
+        <button class="tool-btn" onclick="contactarSoporte()">Contactar Soporte</button>
     </div>
-
 </div>
 
 <script>
+// Función para manejar el logout (cerrar sesión)
+function logout() {
+    sessionStorage.removeItem('username');  // Eliminar el nombre de usuario de la sesión
+    window.location.href = '/';  // Redirigir al inicio de sesión
+}
 
+// Mostrar el nombre del usuario en la parte superior derecha
+function displayUserInfo() {
+    const userName = sessionStorage.getItem('username');
+    if (userName) {
+        document.getElementById('userName').textContent = `Usuario: ${userName}`;
+    }
+}
+
+// Mostrar y ocultar el dropdown de usuario
+function toggleDropdown() {
+    const dropdown = document.getElementById('dropdown');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+}
+
+// Redirigir al soporte
+function contactarSoporte() {
+    window.open('https://portalweb.ucatolica.edu.co/administrativos/index.php/servicios/soporte-tecnico/administracion/tecnicos-de-soporte', '_blank');
+}
+
+// Subir archivo
+async function uploadFile() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert("Por favor, selecciona un archivo.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch('/uploadfile/', {
+        method: 'POST',
+        body: formData
+    });
+
+    const data = await response.json();
+    alert(`Archivo ${data.filename} subido exitosamente.`);
+}
+
+// Ver salones
+function verSalones() {
+    window.location.href = "/salones";
+}
+
+// Ver profesores
+function verProfesores() {
+    window.location.href = "/profesores";
+}
+
+// Enviar mensaje con Enter o clic en botón
 async function sendMessage() {
     const input = document.getElementById("messageInput");
     const message = input.value;
@@ -96,10 +145,8 @@ async function sendMessage() {
     // LLAMADA AL BACKEND
     const response = await fetch("/chat/send", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ mensaje: message })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: message })
     });
 
     const data = await response.json();
@@ -117,64 +164,17 @@ async function sendMessage() {
     chat.scrollTop = chat.scrollHeight;
 }
 
-// Función para generar el PDF
-function generarPDF() {
-    window.open("/generate-pdf", "_blank");
+// Permitir que el mensaje se envíe con Enter
+function checkEnter(event) {
+    if (event.key === "Enter") {
+        sendMessage();
+    }
 }
 
-// Función para subir un archivo
-function subirArchivo() {
-    alert("Sube un archivo.");
-}
-
-// Función para ver los salones
-function verSalones() {
-    window.location.href = "/salones";  // Redirige a la página /salones
-}
-
-// Función para ver los profesores
-function verProfesores() {
-    window.location.href = "/profesores";  // Redirige a la página /profesores
-}
-
-// Función para llenar un formulario
-function llenarFormulario() {
-    window.location.href = "/formulario";  // Redirige a la página /formulario
-}
-
-// Función para ver el historial de consultas
-async function verHistorial() {
-    const response = await fetch("/historial", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json"
-        }
-    });
-    const data = await response.json();
-
-    // Mostrar el historial (esto es solo un ejemplo)
-    let historialDiv = document.createElement("div");
-    historialDiv.innerHTML = `<h3>Historial de Consultas:</h3><ul>${data.map(item => `<li>${item.query}</li>`).join('')}</ul>`;
-    document.body.appendChild(historialDiv);
-}
-
-// Función para contactar soporte (redirige a la URL externa)
-function contactarSoporte() {
-    window.location.href = "https://portalweb.ucatolica.edu.co/administrativos/index.php/servicios/soporte-tecnico/administracion/tecnicos-de-soporte";
-}
-
-// Función para mostrar/ocultar el menú de usuario
-function toggleDropdown() {
-    const dropdown = document.getElementById("dropdownMenu");
-    dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
-}
-
-// Función para cerrar sesión
-function cerrarSesion() {
-    // Lógica para cerrar sesión, por ejemplo, redirigir a la página de inicio de sesión
-    window.location.href = "/";  // Redirige a la página de inicio de sesión
-}
-
+// Ejecutar al cargar la página
+document.addEventListener('DOMContentLoaded', (event) => {
+    displayUserInfo(); // Mostrar el nombre del usuario si está logueado
+});
 </script>
 
 </body>
