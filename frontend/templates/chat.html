@@ -2,97 +2,177 @@
 <html lang="es">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Catalina Chat</title>
-<link rel="stylesheet" href="/static/css/chat.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalina Chat</title>
+    <link rel="stylesheet" href="/static/css/chat.css">
 </head>
 
 <body>
 
 <div class="layout">
 
-<!-- LEFT -->
-<div class="left-panel">
-<h2>Archivos</h2>
-<button class="upload">Subir archivo</button>
-</div>
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+        <h2>Archivos</h2>
+        <button class="upload" onclick="subirArchivo()">Subir archivo</button>  <!-- Botón para subir archivo -->
+        <ul class="files">
+            <!-- Lista de archivos subidos -->
+        </ul>
+    </div>
 
-<!-- CHAT -->
-<div class="chat-panel">
+    <!-- CHAT -->
+    <div class="chat-panel">
 
-<div class="chat-header">
-<img src="/static/images/Logosimple.png">
-<span>Catalina Chatbot</span>
-</div>
+        <!-- HEADER -->
+        <div class="chat-header">
+            <img src="/static/images/Logosimple.png" alt="Logo Catalina">
+            <span>Catalina Chatbot</span>
 
-<div class="chat-messages" id="chatMessages">
-<div class="bot-message">
-Hola 👋 soy Catalina, ¿en qué puedo ayudarte?
-</div>
-</div>
+            <!-- Avatar y Menu -->
+            <div class="user-profile">
+                <div class="avatar" onclick="toggleDropdown()">
+                    <span>U</span> <!-- Aquí puedes poner una inicial o una imagen de avatar -->
+                </div>
+                <div class="dropdown" id="dropdownMenu">
+                    <p>Usuario</p>
+                    <button onclick="cerrarSesion()">Cerrar sesión</button>
+                </div>
+            </div>
+        </div>
 
-<div class="chat-input">
-<input type="text" id="messageInput" placeholder="Escribe tu mensaje...">
-<button onclick="sendMessage()">Enviar</button>
-</div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="bot-message">
+                Hola 👋 soy Catalina, ¿en qué puedo ayudarte?
+            </div>
+        </div>
 
-</div>
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Escribe tu mensaje..." />
+            <button onclick="sendMessage()">Enviar</button>  <!-- Botón de enviar -->
+        </div>
 
-<!-- RIGHT -->
-<div class="right-panel">
-<h2>Herramientas</h2>
+    </div>
 
-<button onclick="generarPDF()">Exportar PDF</button>
-
-</div>
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+        <h2>Herramientas</h2>
+        <button onclick="generarPDF()">Exportar PDF</button>  <!-- Botón para exportar PDF -->
+        <button onclick="verSalones()">Ver Salones</button>  <!-- Botón para ver salones -->
+        <button onclick="verProfesores()">Ver Profesores</button>  <!-- Botón para ver profesores -->
+        <button onclick="llenarFormulario()">Llenar Formulario</button>  <!-- Botón para llenar formulario -->
+        <button onclick="verHistorial()">Historial de Consultas</button>  <!-- Botón para historial -->
+        <button onclick="contactarSoporte()">Contactar Soporte</button>  <!-- Botón para contactar soporte -->
+    </div>
 
 </div>
 
 <script>
 
-async function sendMessage(){
+async function sendMessage() {
+    const input = document.getElementById("messageInput");
+    const message = input.value;
 
-const input = document.getElementById("messageInput")
-const message = input.value
+    if (message.trim() === "") return;
 
-if(message.trim() === "") return
+    const chat = document.getElementById("chatMessages");
 
-const chat = document.getElementById("chatMessages")
+    // MENSAJE DEL USUARIO
+    const userMsg = document.createElement("div");
+    userMsg.className = "user-message";
+    userMsg.textContent = message;
+    chat.appendChild(userMsg);
 
-// MENSAJE USUARIO
-const userMsg = document.createElement("div")
-userMsg.className="user-message"
-userMsg.textContent = message
-chat.appendChild(userMsg)
+    input.value = "";
 
-input.value=""
+    // Mostrar un indicador de carga mientras esperamos la respuesta
+    const loadingMessage = document.createElement("div");
+    loadingMessage.className = "bot-message";
+    loadingMessage.textContent = "Cargando...";
+    chat.appendChild(loadingMessage);
 
-// LLAMADA BACKEND
-const response = await fetch("/chatbot",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({message:message})
-})
+    chat.scrollTop = chat.scrollHeight;
 
-const data = await response.json()
+    // LLAMADA AL BACKEND
+    const response = await fetch("/chat/send", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ mensaje: message })
+    });
 
-// RESPUESTA BOT
-const botMsg = document.createElement("div")
-botMsg.className="bot-message"
-botMsg.textContent = data.response
+    const data = await response.json();
 
-chat.appendChild(botMsg)
+    // Eliminar el mensaje de "Cargando..."
+    loadingMessage.remove();
 
-chat.scrollTop = chat.scrollHeight
+    // RESPUESTA DEL BOT
+    const botMsg = document.createElement("div");
+    botMsg.className = "bot-message";
+    botMsg.textContent = data.respuesta;
+
+    chat.appendChild(botMsg);
+
+    chat.scrollTop = chat.scrollHeight;
 }
 
+// Función para generar el PDF
+function generarPDF() {
+    window.open("/generate-pdf", "_blank");
+}
 
-// PDF
-function generarPDF(){
-window.open("/generate-pdf", "_blank")
+// Función para subir un archivo
+function subirArchivo() {
+    alert("Sube un archivo.");
+}
+
+// Función para ver los salones
+function verSalones() {
+    window.location.href = "/salones";  // Redirige a la página /salones
+}
+
+// Función para ver los profesores
+function verProfesores() {
+    window.location.href = "/profesores";  // Redirige a la página /profesores
+}
+
+// Función para llenar un formulario
+function llenarFormulario() {
+    window.location.href = "/formulario";  // Redirige a la página /formulario
+}
+
+// Función para ver el historial de consultas
+async function verHistorial() {
+    const response = await fetch("/historial", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+    const data = await response.json();
+
+    // Mostrar el historial (esto es solo un ejemplo)
+    let historialDiv = document.createElement("div");
+    historialDiv.innerHTML = `<h3>Historial de Consultas:</h3><ul>${data.map(item => `<li>${item.query}</li>`).join('')}</ul>`;
+    document.body.appendChild(historialDiv);
+}
+
+// Función para contactar soporte (redirige a la URL externa)
+function contactarSoporte() {
+    window.location.href = "https://portalweb.ucatolica.edu.co/administrativos/index.php/servicios/soporte-tecnico/administracion/tecnicos-de-soporte";
+}
+
+// Función para mostrar/ocultar el menú de usuario
+function toggleDropdown() {
+    const dropdown = document.getElementById("dropdownMenu");
+    dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
+}
+
+// Función para cerrar sesión
+function cerrarSesion() {
+    // Lógica para cerrar sesión, por ejemplo, redirigir a la página de inicio de sesión
+    window.location.href = "/";  // Redirige a la página de inicio de sesión
 }
 
 </script>

@@ -1,13 +1,13 @@
 from pydantic import BaseModel, EmailStr
-from pydantic import BaseModel
 
+# Modelo para el registro de usuario
 class UserCreate(BaseModel):
     nombre: str
     cedula: str
     username: str
     password: str
 
-
+# Modelo para el inicio de sesión de usuario
 class UserLogin(BaseModel):
-    username: EmailStr
+    username: str  # Cambié de EmailStr a str
     password: str
