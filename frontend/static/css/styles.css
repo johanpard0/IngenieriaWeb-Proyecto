@@ -1,146 +1,138 @@
-/* RESET GENERAL */
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
+/* RESET */
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, Helvetica, sans-serif;
 }
 
-/* FONDO GENERAL */
-body {
-    background: linear-gradient(135deg, #2ecc71, #27ae60); /* Fondo de verde degradado */
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    color: white;
+/* BODY */
+body{
+height:100vh;
+background:#2ecc71;
+overflow:hidden;
 }
 
 /* HEADER */
-.header {
-    position: absolute;
-    top: 20px;
-    left: 30px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: bold;
-    font-size: 18px;
+.header{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:60px;
+background:#2ecc71;
+color:white;
+display:flex;
+align-items:center;
+padding:0 20px;
+gap:10px;
+z-index:1000;
 }
 
-.header img {
-    width: 35px;
+.header img{
+width:30px;
 }
 
 /* CONTENEDOR PRINCIPAL */
-.container {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 120px;
-    padding: 40px;
+.main{
+position:fixed;
+top:60px;
+left:0;
+width:100%;
+height:calc(100vh - 60px);
+
+display:flex;
+align-items:center;
+justify-content:center;
 }
 
-/* ROBOT */
-.robot img {
-    width: 320px;
-    animation: float 4s ease-in-out infinite;
+/* LOGIN */
+.login{
+width:360px;
+background:white;
+padding:40px;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.1);
+text-align:left;
 }
 
-/* ANIMACIÓN DEL ROBOT */
-@keyframes float {
-    0% {
-        transform: translateY(0px);
-    }
-
-    50% {
-        transform: translateY(-15px);
-    }
-
-    100% {
-        transform: translateY(0px);
-    }
+/* LOGO */
+.logo{
+display:flex;
+justify-content:center;
+margin-bottom:15px;
 }
 
-/* LOGIN BOX */
-.login {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 40px;
-    border-radius: 15px;
-    width: 340px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+.logo img{
+width:200px;
+animation: float 3s ease-in-out infinite;
+transition: transform 0.3s ease;
 }
 
-.login h1 {
-    margin-bottom: 5px;
-    font-size: 28px;
+/* ANIMACIÓN FLOTANTE */
+@keyframes float{
+0%{ transform: translateY(0px); }
+50%{ transform: translateY(-10px); }
+100%{ transform: translateY(0px); }
 }
 
-.login p {
-    font-size: 14px;
-    margin-bottom: 25px;
-    color: #ddd;
+/* EFECTO HOVER (cuando pasas el mouse) */
+.logo img:hover{
+transform: scale(1.1);
+}
+
+/* TEXTOS */
+.login h1{
+font-size:26px;
+margin-bottom:10px;
+color:#0b2a4a;
+}
+
+.login p{
+font-size:14px;
+margin-bottom:25px;
+color:#6b7280;
 }
 
 /* INPUTS */
-.login input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: none;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    outline: none;
+.login input{
+width:100%;
+padding:12px;
+margin-bottom:15px;
+border:1px solid #ddd;
+border-radius:8px;
 }
 
-.login input::placeholder {
-    color: #ccc;
-}
-
-/* MOSTRAR CONTRASEÑA */
-.show {
-    font-size: 12px;
-    cursor: pointer;
-    display: block;
-    margin-bottom: 15px;
-    color: #ddd;
+.login input:focus{
+border-color:#2ecc71;
+outline:none;
 }
 
 /* BOTÓN */
-.login button {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    background: #16a085; /* Verde más claro */
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
+.login button{
+width:100%;
+padding:12px;
+border:none;
+border-radius:8px;
+background:#2ecc71;
+color:white;
+font-weight:bold;
+cursor:pointer;
 }
 
-.login button:hover {
-    background: #1abc9c; /* Verde brillante */
+.login button:hover{
+background:#2ecc71;
 }
 
 /* LINKS */
-.links {
-    margin-top: 15px;
-    font-size: 13px;
+.links{
+margin-top:15px;
+text-align:center;
+font-size:13px;
 }
 
-.links a {
-    color: #16a085; /* Verde más claro */
-    text-decoration: none;
-}
-
-/* FOOTER */
-.footer {
-    margin-top: 25px;
-    font-size: 11px;
-    color: #aaa;
-    text-align: center;
+.links a{
+color:#2ecc71;
+text-decoration:none;
+font-weight:bold;
 }
