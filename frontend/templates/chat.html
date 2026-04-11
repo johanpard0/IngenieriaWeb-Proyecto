@@ -1,254 +1,361 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Catalina Chat</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catalina Chat</title>
 
-<link rel="stylesheet" href="/static/css/chat.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- ICONOS PRO -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/static/css/chat.css">
 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
 
-<div class="layout">
+  <div class="layout">
 
-<!-- LEFT PANEL -->
-<div class="left-panel">
-<h2><i class="fas fa-folder"></i> Archivos</h2>
-<input type="file" id="fileInput">
-<button class="upload" onclick="uploadFile()">
-    <i class="fas fa-upload"></i> Subir archivo
-</button>
-</div>
+    <aside class="left-panel">
+        <div class="panel-card">
+          <div class="panel-title">
+            <h2><i class="fas fa-folder-open"></i> Archivos</h2>
+            <p>Adjunta documentos para complementar la consulta.</p>
+          </div>
 
-<!-- CHAT -->
-<div class="chat-panel">
+          <div class="file-box">
+            <label for="fileInput" class="file-label">
+              <i class="fas fa-paperclip"></i>
+              <span>Seleccionar archivo</span>
+            </label>
 
-<div class="chat-header">
+            <input type="file" id="fileInput">
+            <small id="fileName">Ningún archivo seleccionado</small>
+          </div>
 
-<div style="display:flex; align-items:center; gap:10px;">
-<img src="/static/images/Logosimple.png" style="width:35px;">
-<span>Catalina Chatbot</span>
-</div>
+          <button class="upload" onclick="uploadFile()">
+            <i class="fas fa-upload"></i> Subir archivo
+          </button>
 
-<div class="user-profile">
-<div class="avatar" id="avatarUser" onclick="toggleDropdown()">U</div>
+          <div class="uploaded-files-section">
+            <h3>Archivos subidos</h3>
+            <div id="uploadedFiles" class="uploaded-files-list">
+              <p class="empty-files">No hay archivos subidos.</p>
+            </div>
+          </div>
+        </div>
+      </aside>
 
-<div id="dropdown" class="dropdown">
-<p id="userName">Usuario</p>
+    <main class="chat-panel">
 
-<button onclick="abrirPerfil()">
-<i class="fas fa-user"></i> Ver perfil
-</button>
+      <div class="chat-header">
+        <div class="chat-brand">
+          <div class="chat-brand-icon">
+            <img src="/static/images/Logosimple.png" alt="Catalina">
+          </div>
+          <div class="chat-brand-text">
+            <span class="chat-title">Catalina Chatbot</span>
+            <span class="chat-subtitle">Asistente virtual institucional</span>
+          </div>
+        </div>
 
-<button onclick="configuracion()">
-<i class="fas fa-cog"></i> Configuración
-</button>
+        <div class="user-profile">
+          <div class="avatar" id="avatarUser" onclick="toggleDropdown()">U</div>
 
-<button onclick="toggleDarkMode()">
-<i class="fas fa-moon"></i> Modo noche
-</button>
+          <div id="dropdown" class="dropdown">
+            <p id="userName">Usuario</p>
 
-<button onclick="verHistorial()">
-<i class="fas fa-clock"></i> Historial
-</button>
+            <button onclick="abrirPerfil()">
+              <i class="fas fa-user"></i> Ver perfil
+            </button>
 
-<button onclick="logout()">
-<i class="fas fa-sign-out-alt"></i> Cerrar sesión
-</button>
-</div>
-</div>
+            <button onclick="configuracion()">
+              <i class="fas fa-cog"></i> Configuración
+            </button>
 
-</div>
+            <button onclick="toggleDarkMode()">
+              <i class="fas fa-moon"></i> Modo noche
+            </button>
 
-<div class="chat-messages" id="chatMessages">
-<div class="bot-message">Hola 👋 soy Catalina, ¿en qué puedo ayudarte?</div>
-</div>
+            <button onclick="verHistorial()">
+              <i class="fas fa-clock"></i> Historial
+            </button>
 
-<div class="chat-input">
-<input type="text" id="messageInput" placeholder="Escribe..." onkeypress="checkEnter(event)">
-<button onclick="sendMessage()">
-<i class="fas fa-paper-plane"></i>
-</button>
-</div>
+            <button onclick="logout()">
+              <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+            </button>
+          </div>
+        </div>
+      </div>
 
-</div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="bot-message">
+          <div class="message-badge">Catalina</div>
+          <div class="message-text">Hola 👋 soy Catalina, ¿en qué puedo ayudarte?</div>
+        </div>
+      </div>
 
-<!-- RIGHT PANEL -->
-<div class="right-panel">
-<h2><i class="fas fa-tools"></i> Herramientas</h2>
+      <div class="chat-input">
+        <div class="input-wrapper">
+          <i class="fas fa-pen"></i>
+          <input type="text" id="messageInput" placeholder="Escribe tu consulta aquí..." onkeypress="checkEnter(event)">
+        </div>
 
-<button onclick="quickMsg('salones')">
-<i class="fas fa-building"></i> Salones
-</button>
+        <button class="send-btn" onclick="sendMessage()" aria-label="Enviar mensaje">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
 
-<button onclick="quickMsg('profesores')">
-<i class="fas fa-chalkboard-teacher"></i> Profesores
-</button>
+    </main>
 
-<button onclick="quickMsg('horario')">
-<i class="fas fa-calendar"></i> Horarios
-</button>
+    <aside class="right-panel">
+      <div class="panel-card tools-card">
+        <div class="panel-title">
+          <h2><i class="fas fa-screwdriver-wrench"></i> Herramientas</h2>
+          <p>Accesos rápidos a consultas frecuentes.</p>
+        </div>
 
-<button onclick="quickMsg('formulario')">
-<i class="fas fa-file-alt"></i> Formulario
-</button>
+        <div class="tool-list">
+          <button onclick="quickMsg('salones')">
+            <i class="fas fa-building"></i> Salones
+          </button>
 
-<button onclick="contactarSoporte()">
-<i class="fas fa-headset"></i> Soporte
-</button>
+          <button onclick="quickMsg('profesores')">
+            <i class="fas fa-chalkboard-teacher"></i> Profesores
+          </button>
 
-</div>
+          <button onclick="quickMsg('horario')">
+            <i class="fas fa-calendar-days"></i> Horarios
+          </button>
 
-</div>
+          <button onclick="quickMsg('formulario')">
+            <i class="fas fa-file-lines"></i> Formulario
+          </button>
 
-<script>
+          <button onclick="contactarSoporte()">
+            <i class="fas fa-headset"></i> Soporte
+          </button>
+        </div>
+      </div>
+    </aside>
 
-// PERFIL
-function cargarUsuario(){
-    const user = sessionStorage.getItem('username');
+  </div>
 
-    if(user){
-        document.getElementById('userName').textContent = "👤 " + user;
-        document.getElementById('avatarUser').textContent = user.charAt(0).toUpperCase();
-    }
+  <script>
+      function cargarUsuario(){
+        const user = sessionStorage.getItem('username');
 
-    if(localStorage.getItem("darkMode") === "true"){
-        document.body.classList.add("dark-mode");
-    }
-}
+        if(user){
+          document.getElementById('userName').textContent = "👤 " + user;
+          document.getElementById('avatarUser').textContent = user.charAt(0).toUpperCase();
+        }
 
-function toggleDropdown(){
-    const d = document.getElementById('dropdown');
-    d.style.display = d.style.display === 'block' ? 'none' : 'block';
-}
+        if(localStorage.getItem("darkMode") === "true"){
+          document.body.classList.add("dark-mode");
+        }
 
-function abrirPerfil(){
-    const user = sessionStorage.getItem('username') || "Usuario";
-    alert("👤 Usuario: " + user);
-}
+        loadFiles();
+      }
 
-function configuracion(){
-    alert("⚙️ Configuración disponible pronto");
-}
+      function toggleDropdown(){
+        const d = document.getElementById('dropdown');
+        d.style.display = d.style.display === 'block' ? 'none' : 'block';
+      }
 
-function verHistorial(){
-    quickMsg("historial");
-}
+      function abrirPerfil(){
+        const user = sessionStorage.getItem('username') || "Usuario";
+        alert("👤 Usuario: " + user);
+      }
 
-function logout(){
-    sessionStorage.removeItem('username');
-    window.location.href = '/';
-}
+      function configuracion(){
+        alert("⚙️ Configuración disponible pronto");
+      }
 
-// MODO NOCHE
-function toggleDarkMode(){
-    document.body.classList.toggle("dark-mode");
+      function verHistorial(){
+        quickMsg("historial");
+      }
 
-    const isDark = document.body.classList.contains("dark-mode");
-    localStorage.setItem("darkMode", isDark);
-}
+      function logout(){
+        sessionStorage.removeItem('username');
+        window.location.href = '/';
+      }
 
-// CLICK AFUERA
-window.addEventListener('click', function(e){
-    const profile = document.querySelector('.user-profile');
-    const dropdown = document.getElementById('dropdown');
+      function toggleDarkMode(){
+        document.body.classList.toggle("dark-mode");
+        const isDark = document.body.classList.contains("dark-mode");
+        localStorage.setItem("darkMode", isDark);
+      }
 
-    if(!profile.contains(e.target)){
-        dropdown.style.display = 'none';
-    }
-});
+      window.addEventListener('click', function(e){
+        const profile = document.querySelector('.user-profile');
+        const dropdown = document.getElementById('dropdown');
 
-// CHAT
-function checkEnter(e){
-    if(e.key === "Enter"){
+        if(profile && !profile.contains(e.target)){
+          dropdown.style.display = 'none';
+        }
+      });
+
+      function checkEnter(e){
+        if(e.key === "Enter"){
+          sendMessage();
+        }
+      }
+
+      function quickMsg(text){
+        document.getElementById("messageInput").value = text;
         sendMessage();
-    }
-}
+      }
 
-function quickMsg(text){
-    document.getElementById("messageInput").value = text;
-    sendMessage();
-}
+      async function sendMessage(){
+        const input = document.getElementById("messageInput");
+        const message = input.value.trim();
 
-async function sendMessage(){
+        if(message === "") return;
 
-    const input = document.getElementById("messageInput");
-    const message = input.value.trim();
+        const chat = document.getElementById("chatMessages");
 
-    if(message === "") return;
+        const userMsg = document.createElement("div");
+        userMsg.className = "user-message";
+        userMsg.innerHTML = `
+          <div class="message-badge user-badge">Tú</div>
+          <div class="message-text"></div>
+        `;
+        userMsg.querySelector(".message-text").textContent = message;
+        chat.appendChild(userMsg);
 
-    const chat = document.getElementById("chatMessages");
+        input.value = "";
 
-    const userMsg = document.createElement("div");
-    userMsg.className = "user-message";
-    userMsg.textContent = message;
-    chat.appendChild(userMsg);
+        const loading = document.createElement("div");
+        loading.className = "bot-message";
+        loading.innerHTML = `
+          <div class="message-badge">Catalina</div>
+          <div class="message-text">Catalina está escribiendo...</div>
+        `;
+        chat.appendChild(loading);
 
-    input.value = "";
+        chat.scrollTop = chat.scrollHeight;
 
-    const loading = document.createElement("div");
-    loading.className = "bot-message";
-    loading.textContent = "Catalina está escribiendo...";
-    chat.appendChild(loading);
-
-    chat.scrollTop = chat.scrollHeight;
-
-    try{
-        const res = await fetch("/chat/send", {
+        try{
+          const res = await fetch("/chat/send", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({message})
-        });
+          });
 
-        const data = await res.json();
-        loading.remove();
+          const data = await res.json();
+          loading.remove();
 
-        const botMsg = document.createElement("div");
-        botMsg.className = "bot-message";
-        botMsg.textContent = data.respuesta;
+          const botMsg = document.createElement("div");
+          botMsg.className = "bot-message";
+          botMsg.innerHTML = `
+            <div class="message-badge">Catalina</div>
+            <div class="message-text"></div>
+          `;
+          botMsg.querySelector(".message-text").textContent = data.respuesta;
 
-        chat.appendChild(botMsg);
+          chat.appendChild(botMsg);
 
-    }catch(e){
-        loading.textContent = "Error conectando con el servidor";
-    }
+        }catch(e){
+          loading.querySelector(".message-text").textContent = "Error conectando con el servidor";
+        }
 
-    chat.scrollTop = chat.scrollHeight;
-}
+        chat.scrollTop = chat.scrollHeight;
+      }
 
-// OTROS
-function contactarSoporte(){
-    window.open("https://portalweb.ucatolica.edu.co/administrativos/index.php/servicios/soporte-tecnico/administracion/tecnicos-de-soporte","_blank");
-}
+      function contactarSoporte(){
+        window.open("https://portalweb.ucatolica.edu.co/administrativos/index.php/servicios/soporte-tecnico/administracion/tecnicos-de-soporte","_blank");
+      }
 
-async function uploadFile(){
-    const file = document.getElementById('fileInput').files[0];
+      async function uploadFile(){
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
 
-    if(!file){
-        alert("Selecciona archivo");
-        return;
-    }
+        if(!file){
+          alert("Selecciona un archivo");
+          return;
+        }
 
-    const form = new FormData();
-    form.append("file", file);
+        const form = new FormData();
+        form.append("file", file);
 
-    await fetch('/uploadfile/',{
-        method:"POST",
-        body:form
-    });
+        try{
+          const response = await fetch('/uploadfile/', {
+            method: "POST",
+            body: form
+          });
 
-    alert("Archivo subido");
-}
+          const data = await response.json();
 
-// INIT
-document.addEventListener('DOMContentLoaded', cargarUsuario);
+          if(response.ok){
+            fileInput.value = "";
+            document.getElementById("fileName").textContent = "Ningún archivo seleccionado";
+            await loadFiles();
+            alert(data.message);
+          }else{
+            alert(data.detail || "No se pudo subir el archivo");
+          }
+        }catch(error){
+          alert("Error al subir el archivo");
+        }
+      }
 
-</script>
+      async function loadFiles(){
+        const container = document.getElementById("uploadedFiles");
+
+        try{
+          const response = await fetch("/files");
+          const data = await response.json();
+
+          if(!data.files || data.files.length === 0){
+            container.innerHTML = `<p class="empty-files">No hay archivos subidos.</p>`;
+            return;
+          }
+
+          container.innerHTML = data.files.map(file => `
+            <div class="uploaded-file-item">
+              <div class="file-info">
+                <i class="fas fa-file-alt"></i>
+                <span title="${file}">${file}</span>
+              </div>
+              <button class="delete-file-btn" onclick="deleteFile('${encodeURIComponent(file)}')" title="Eliminar archivo">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          `).join("");
+        }catch(error){
+          container.innerHTML = `<p class="empty-files">No se pudieron cargar los archivos.</p>`;
+        }
+      }
+
+      async function deleteFile(encodedFilename){
+        const filename = decodeURIComponent(encodedFilename);
+
+        try{
+          const response = await fetch(`/files/${encodedFilename}`, {
+            method: "DELETE"
+          });
+
+          const data = await response.json();
+
+          if(response.ok){
+            await loadFiles();
+          }else{
+            alert(data.detail || "No se pudo eliminar el archivo");
+          }
+        }catch(error){
+          alert("Error al eliminar el archivo");
+        }
+      }
+
+      document.getElementById("fileInput").addEventListener("change", function(){
+        const file = this.files[0];
+        document.getElementById("fileName").textContent = file ? file.name : "Ningún archivo seleccionado";
+      });
+
+      document.addEventListener('DOMContentLoaded', cargarUsuario);
+    </script>
 
 </body>
 </html>

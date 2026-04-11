@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Accediendo...</title>
+</head>
+<body>
+  <script>
+    const username = "{{ username }}";
+    if (username) {
+      sessionStorage.setItem("username", username);
+    }
+    window.location.href = "/chat";
+  </script>
+</body>
+</html>

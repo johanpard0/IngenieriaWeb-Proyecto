@@ -1,136 +1,188 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Catalina | Registro</title>
-<link rel="stylesheet" href="/static/css/styles.css">
-</head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catalina | Registro</title>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
 <body>
 
-<div class="header">
-  <img src="/static/images/Logosimple.png">
-  <span>Catalina</span>
-</div>
-
-<div class="main">
-
-  <div class="login register-box">
-
-    <div class="logo">
-      <img src="/static/images/Logosimple.png">
+  <div class="header">
+    <div class="brand">
+      <div class="brand-mark">
+        <img src="/static/images/Logosimple.png" alt="Logo Catalina">
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">Catalina</span>
+        <span class="brand-subtitle">Asistente virtual institucional</span>
+      </div>
     </div>
-
-    <h1>Crear cuenta</h1>
-    <p>Registro de usuario</p>
-
-    <form id="registerForm">
-
-      <input 
-        type="text" 
-        id="nombre" 
-        placeholder="Nombre completo"
-        required
-      >
-
-      <input 
-        type="text" 
-        id="cedula" 
-        placeholder="Cédula"
-        required
-      >
-
-      <input 
-        type="email" 
-        id="username" 
-        placeholder="Correo institucional"
-        required
-      >
-
-      <input 
-        type="password" 
-        id="password" 
-        placeholder="Contraseña"
-        required
-      >
-
-      <button type="submit">Registrar</button>
-
-    </form>
-
-    <div class="links">
-      ¿Ya tienes cuenta?
-      <a href="/">Iniciar sesión</a>
-    </div>
-
   </div>
 
-</div>
+  <main class="auth-container">
+    <section class="auth-visual">
+      <div class="visual-overlay"></div>
+      <div class="visual-content">
+        <span class="badge">Registro institucional</span>
+        <h2>Crea tu cuenta en Catalina</h2>
+        <p>
+          Regístrate con tus datos institucionales para acceder a una experiencia
+          moderna, segura y centralizada dentro de la plataforma.
+        </p>
 
-<script>
+        <div class="feature-list">
+          <div class="feature-card">
+            <span class="feature-line"></span>
+            <div>
+              <h3>Registro rápido</h3>
+              <p>Completa tus datos de forma clara y sencilla en pocos pasos.</p>
+            </div>
+          </div>
 
-const nombre = document.getElementById("nombre")
-const cedula = document.getElementById("cedula")
-const correo = document.getElementById("username")
+          <div class="feature-card">
+            <span class="feature-line"></span>
+            <div>
+              <h3>Acceso institucional</h3>
+              <p>Utiliza tu correo @ucatolica.edu.co para crear tu cuenta.</p>
+            </div>
+          </div>
 
-// VALIDACIÓN NOMBRE
-nombre.addEventListener("input", () => {
-  if (!nombre.value.match(/^[A-Za-zÁÉÍÓÚáéíóúñÑ ]*$/)) {
-    nombre.setCustomValidity("Solo se permiten letras")
-  } else {
-    nombre.setCustomValidity("")
-  }
-})
+          <div class="feature-card">
+            <span class="feature-line"></span>
+            <div>
+              <h3>Experiencia unificada</h3>
+              <p>Accede a los servicios y consultas desde un solo lugar.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-// VALIDACIÓN CÉDULA
-cedula.addEventListener("input", () => {
-  if (!cedula.value.match(/^[0-9]*$/)) {
-    cedula.setCustomValidity("Solo se permiten números")
-  } else {
-    cedula.setCustomValidity("")
-  }
-})
+    <section class="auth-form-section">
+      <div class="login-card">
+        <div class="logo">
+          <img src="/static/images/Logosimple.png" alt="Logo Catalina">
+        </div>
 
-// VALIDACIÓN CORREO INSTITUCIONAL
-correo.addEventListener("input", () => {
-  if (!correo.value.endsWith("@ucatolica.edu.co")) {
-    correo.setCustomValidity("Debe ser correo institucional @ucatolica.edu.co")
-  } else {
-    correo.setCustomValidity("")
-  }
-})
+        <div class="login-text">
+          <h1>Crear cuenta</h1>
+          <p>Registro de usuario</p>
+        </div>
 
-// ENVÍO FORMULARIO
-document.getElementById("registerForm").addEventListener("submit", async function(e){
+        <form id="registerForm" novalidate>
+          <div class="input-group">
+            <label for="nombre">Nombre completo</label>
+            <input type="text" id="nombre" placeholder="Ingresa tu nombre completo" required>
+          </div>
 
-  e.preventDefault()
+          <div class="input-group">
+            <label for="cedula">Cédula</label>
+            <input type="text" id="cedula" placeholder="Ingresa tu cédula" required>
+          </div>
 
-  const dataUser = {
-    nombre: nombre.value,
-    cedula: cedula.value,
-    username: correo.value,
-    password: document.getElementById("password").value
-  }
+          <div class="input-group">
+            <label for="username">Correo institucional</label>
+            <input type="email" id="username" placeholder="Ingresa tu correo institucional" required>
+          </div>
 
-  const response = await fetch("/register",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify(dataUser)
-  })
+          <div class="input-group">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" placeholder="Crea una contraseña" required>
+          </div>
 
-  const data = await response.json()
+          <button type="submit">Registrar</button>
+        </form>
 
-  if(response.ok){
-    alert("Usuario creado correctamente")
-    window.location.href="/"
-  }else{
-    alert(data.detail)
-  }
+        <div class="social-divider">
+            <span>o regístrate con</span>
+          </div>
 
-})
+          <div class="social-login">
+            <a href="/auth/google/login" class="social-btn google-btn" aria-label="Registrarse con Google" title="Registrarse con Google">
+              <img src="/static/images/google-icon.svg" alt="Google">
+            </a>
 
-</script>
+            <a href="/auth/microsoft/login" class="social-btn microsoft-btn" aria-label="Registrarse con Microsoft" title="Registrarse con Microsoft">
+              <img src="/static/images/microsoft-icon.svg" alt="Microsoft">
+            </a>
+          </div>
+
+        <div class="links">
+          ¿Ya tienes cuenta?
+          <a href="/">Iniciar sesión</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const nombre = document.getElementById("nombre");
+    const cedula = document.getElementById("cedula");
+    const correo = document.getElementById("username");
+    const password = document.getElementById("password");
+
+    nombre.addEventListener("input", () => {
+      if (!nombre.value.match(/^[A-Za-zÁÉÍÓÚáéíóúñÑ ]*$/)) {
+        nombre.setCustomValidity("Solo se permiten letras");
+      } else {
+        nombre.setCustomValidity("");
+      }
+    });
+
+    cedula.addEventListener("input", () => {
+      if (!cedula.value.match(/^[0-9]*$/)) {
+        cedula.setCustomValidity("Solo se permiten números");
+      } else {
+        cedula.setCustomValidity("");
+      }
+    });
+
+    correo.addEventListener("input", () => {
+      if (!correo.value.endsWith("@ucatolica.edu.co")) {
+        correo.setCustomValidity("Debe ser correo institucional @ucatolica.edu.co");
+      } else {
+        correo.setCustomValidity("");
+      }
+    });
+
+    document.getElementById("registerForm").addEventListener("submit", async function(e){
+      e.preventDefault();
+
+      if (!this.checkValidity()) {
+        this.reportValidity();
+        return;
+      }
+
+      const dataUser = {
+        nombre: nombre.value,
+        cedula: cedula.value,
+        username: correo.value,
+        password: password.value
+      };
+
+      const response = await fetch("/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dataUser)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Usuario creado correctamente");
+        sessionStorage.setItem("username", data.username || correo.value);
+        window.location.href = "/chat";
+      } else {
+        alert(data.detail);
+      }
+    });
+  </script>
 
 </body>
 </html>
