@@ -29,23 +29,23 @@ responses = {
     ],
     "horarios": [
         "Los horarios de los salones están disponibles en el portal de la universidad.",
-        "Puedes revisar los horarios de los salones en la plataforma de la universidad.",
-        "Los horarios de clases se publican en el portal de la universidad."
+        "Puedes revisar los horarios en la plataforma académica.",
+        "Los horarios de clases se publican en el portal institucional."
     ],
     "salones": [
-        "Los salones se encuentran en varios edificios de la universidad. ¿Te gustaría saber más sobre alguno?",
-        "Puedes ver los detalles de los salones en el portal web de la universidad.",
-        "¿Te gustaría saber sobre los salones disponibles?"
+        "Los salones están distribuidos por bloques. ¿Cuál necesitas?",
+        "Puedes consultar los salones por bloque y piso.",
+        "¿Qué salón deseas ubicar?"
     ],
     "profesores": [
-        "Los profesores están disponibles a través del portal. ¿Quieres saber sobre alguno en particular?",
-        "Puedes consultar la información de los profesores en el portal de la universidad.",
-        "¿Hay algún profesor sobre el que quieras saber más?"
+        "Puedes consultar los profesores por materia.",
+        "¿Sobre qué profesor necesitas información?",
+        "Dime la materia y te indico el docente."
     ]
 }
 
 # =========================
-# RUTAS HTML (VERSIÓN SEGURA)
+# RUTAS HTML
 # =========================
 
 @app.get("/", response_class=HTMLResponse)
@@ -140,20 +140,55 @@ def obtener_documento_por_id(id: int):
 class ChatMessage(BaseModel):
     message: str
 
+
 @app.post("/chat/send")
 async def chatbot_response(chat_message: ChatMessage):
-    user_message = chat_message.message.lower()  # Convertir a minúsculas para comparar sin distinción de mayúsculas
+    user_message = chat_message.message.lower()
 
-    # Responder en función de las palabras clave en el mensaje
+    # SALUDOS
     if "hola" in user_message or "buenos días" in user_message or "hey" in user_message:
         response = random.choice(responses["saludos"])
-    elif "horario" in user_message or "clases" in user_message:
+
+    # SALONES
+    elif "salon" in user_message or "salón" in user_message:
+        if "a101" in user_message:
+            response = "El salón A101 está en el bloque A, primer piso."
+        elif "b202" in user_message:
+            response = "El salón B202 está en el bloque B, segundo piso."
+        else:
+            response = random.choice(responses["salones"])
+
+    # PROFESORES
+    elif "profesor" in user_message or "quien dicta" in user_message:
+        if "bases de datos" in user_message:
+            response = "Bases de Datos la dicta el profesor Carlos Pérez en el salón A101."
+        elif "redes" in user_message:
+            response = "Redes la dicta la profesora Ana Gómez en el salón B202."
+        else:
+            response = random.choice(responses["profesores"])
+
+    # HORARIOS
+    elif "horario" in user_message:
         response = random.choice(responses["horarios"])
-    elif "salon" in user_message:
-        response = random.choice(responses["salones"])
-    elif "profesor" in user_message:
-        response = random.choice(responses["profesores"])
+
+    # PERFIL
+    elif "perfil" in user_message:
+        response = "Perfil de usuario: Usuario activo. Puedes ver opciones en el menú."
+
+    # CONFIGURACION
+    elif "configuracion" in user_message or "configuración" in user_message:
+        response = "Configuración: puedes cambiar contraseña, idioma y más opciones próximamente."
+
+    # HISTORIAL
+    elif "historial" in user_message:
+        response = "Historial disponible próximamente."
+
+    # FORMULARIOS
+    elif "formulario" in user_message:
+        response = "Usa el botón de formulario para hacer solicitudes."
+
+    # DEFAULT
     else:
-        response = "Lo siento, no entendí tu mensaje. ¿En qué más puedo ayudarte?"
+        response = "No entendí tu mensaje. Intenta con: ¿Dónde queda el salón A101?"
 
     return {"respuesta": response}

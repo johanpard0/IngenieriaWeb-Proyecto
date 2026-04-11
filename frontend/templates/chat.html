@@ -1,132 +1,189 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catalina Chat</title>
-    <link rel="stylesheet" href="/static/css/chat.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalina Chat</title>
+
+<link rel="stylesheet" href="/static/css/chat.css">
+
+<!-- ICONOS PRO -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
 
 <body>
 
 <div class="layout">
-    <!-- LEFT PANEL -->
-    <div class="left-panel">
-        <h2>Archivos</h2>
-        <input type="file" id="fileInput">
-        <label for="fileInput" id="fileLabel">Seleccionar archivo</label>
-        <button onclick="uploadFile()">Subir archivo</button>
-    </div>
 
-    <!-- CHAT -->
-    <div class="chat-panel">
-        <div class="chat-header">
-            <img src="/static/images/Logosimple.png" alt="Logo Catalina">
-            <span>Catalina Chatbot</span>
+<!-- LEFT PANEL -->
+<div class="left-panel">
+<h2><i class="fas fa-folder"></i> Archivos</h2>
+<input type="file" id="fileInput">
+<button class="upload" onclick="uploadFile()">
+    <i class="fas fa-upload"></i> Subir archivo
+</button>
+</div>
 
-            <!-- Avatar de usuario en la parte superior derecha -->
-            <div class="user-profile" onclick="toggleDropdown()">
-                <div class="avatar">U</div> <!-- Avatar con inicial del usuario -->
-                <div id="dropdown" class="dropdown">
-                    <p id="userName">Usuario: </p>
-                    <button onclick="logout()">Cerrar sesión</button>
-                </div>
-            </div>
-        </div>
+<!-- CHAT -->
+<div class="chat-panel">
 
-        <div class="chat-messages" id="chatMessages">
-            <div class="bot-message">
-                ¡Hola! Soy Catalina, ¿en qué puedo ayudarte?
-            </div>
-        </div>
+<div class="chat-header">
 
-        <div class="chat-input">
-            <input type="text" id="messageInput" placeholder="Escribe tu mensaje..." onkeypress="checkEnter(event)">
-            <button onclick="sendMessage()">Enviar</button>
-        </div>
-    </div>
+<div style="display:flex; align-items:center; gap:10px;">
+<img src="/static/images/Logosimple.png" style="width:35px;">
+<span>Catalina Chatbot</span>
+</div>
 
-    <!-- RIGHT PANEL -->
-    <div class="right-panel">
-        <h2>Herramientas</h2>
-        <button class="tool-btn" onclick="generarPDF()">Exportar PDF</button>
-        <button class="tool-btn" onclick="verSalones()">Ver Salones</button>
-        <button class="tool-btn" onclick="verProfesores()">Ver Profesores</button>
-        <button class="tool-btn" onclick="llenarFormulario()">Llenar Formulario</button>
-        <button class="tool-btn" onclick="verHistorial()">Historial de Consultas</button>
-        <button class="tool-btn" onclick="contactarSoporte()">Contactar Soporte</button>
-    </div>
+<div class="user-profile">
+<div class="avatar" id="avatarUser" onclick="toggleDropdown()">U</div>
+
+<div id="dropdown" class="dropdown">
+<p id="userName">Usuario</p>
+
+<button onclick="abrirPerfil()">
+<i class="fas fa-user"></i> Ver perfil
+</button>
+
+<button onclick="configuracion()">
+<i class="fas fa-cog"></i> Configuración
+</button>
+
+<button onclick="toggleDarkMode()">
+<i class="fas fa-moon"></i> Modo noche
+</button>
+
+<button onclick="verHistorial()">
+<i class="fas fa-clock"></i> Historial
+</button>
+
+<button onclick="logout()">
+<i class="fas fa-sign-out-alt"></i> Cerrar sesión
+</button>
+</div>
+</div>
+
+</div>
+
+<div class="chat-messages" id="chatMessages">
+<div class="bot-message">Hola 👋 soy Catalina, ¿en qué puedo ayudarte?</div>
+</div>
+
+<div class="chat-input">
+<input type="text" id="messageInput" placeholder="Escribe..." onkeypress="checkEnter(event)">
+<button onclick="sendMessage()">
+<i class="fas fa-paper-plane"></i>
+</button>
+</div>
+
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="right-panel">
+<h2><i class="fas fa-tools"></i> Herramientas</h2>
+
+<button onclick="quickMsg('salones')">
+<i class="fas fa-building"></i> Salones
+</button>
+
+<button onclick="quickMsg('profesores')">
+<i class="fas fa-chalkboard-teacher"></i> Profesores
+</button>
+
+<button onclick="quickMsg('horario')">
+<i class="fas fa-calendar"></i> Horarios
+</button>
+
+<button onclick="quickMsg('formulario')">
+<i class="fas fa-file-alt"></i> Formulario
+</button>
+
+<button onclick="contactarSoporte()">
+<i class="fas fa-headset"></i> Soporte
+</button>
+
+</div>
+
 </div>
 
 <script>
-// Función para manejar el logout (cerrar sesión)
-function logout() {
-    sessionStorage.removeItem('username');  // Eliminar el nombre de usuario de la sesión
-    window.location.href = '/';  // Redirigir al inicio de sesión
-}
 
-// Mostrar el nombre del usuario en la parte superior derecha
-function displayUserInfo() {
-    const userName = sessionStorage.getItem('username');
-    if (userName) {
-        document.getElementById('userName').textContent = `Usuario: ${userName}`;
+// PERFIL
+function cargarUsuario(){
+    const user = sessionStorage.getItem('username');
+
+    if(user){
+        document.getElementById('userName').textContent = "👤 " + user;
+        document.getElementById('avatarUser').textContent = user.charAt(0).toUpperCase();
+    }
+
+    if(localStorage.getItem("darkMode") === "true"){
+        document.body.classList.add("dark-mode");
     }
 }
 
-// Mostrar y ocultar el dropdown de usuario
-function toggleDropdown() {
+function toggleDropdown(){
+    const d = document.getElementById('dropdown');
+    d.style.display = d.style.display === 'block' ? 'none' : 'block';
+}
+
+function abrirPerfil(){
+    const user = sessionStorage.getItem('username') || "Usuario";
+    alert("👤 Usuario: " + user);
+}
+
+function configuracion(){
+    alert("⚙️ Configuración disponible pronto");
+}
+
+function verHistorial(){
+    quickMsg("historial");
+}
+
+function logout(){
+    sessionStorage.removeItem('username');
+    window.location.href = '/';
+}
+
+// MODO NOCHE
+function toggleDarkMode(){
+    document.body.classList.toggle("dark-mode");
+
+    const isDark = document.body.classList.contains("dark-mode");
+    localStorage.setItem("darkMode", isDark);
+}
+
+// CLICK AFUERA
+window.addEventListener('click', function(e){
+    const profile = document.querySelector('.user-profile');
     const dropdown = document.getElementById('dropdown');
-    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-}
 
-// Redirigir al soporte
-function contactarSoporte() {
-    window.open('https://portalweb.ucatolica.edu.co/administrativos/index.php/servicios/soporte-tecnico/administracion/tecnicos-de-soporte', '_blank');
-}
-
-// Subir archivo
-async function uploadFile() {
-    const fileInput = document.getElementById('fileInput');
-    const file = fileInput.files[0];
-
-    if (!file) {
-        alert("Por favor, selecciona un archivo.");
-        return;
+    if(!profile.contains(e.target)){
+        dropdown.style.display = 'none';
     }
+});
 
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const response = await fetch('/uploadfile/', {
-        method: 'POST',
-        body: formData
-    });
-
-    const data = await response.json();
-    alert(`Archivo ${data.filename} subido exitosamente.`);
+// CHAT
+function checkEnter(e){
+    if(e.key === "Enter"){
+        sendMessage();
+    }
 }
 
-// Ver salones
-function verSalones() {
-    window.location.href = "/salones";
+function quickMsg(text){
+    document.getElementById("messageInput").value = text;
+    sendMessage();
 }
 
-// Ver profesores
-function verProfesores() {
-    window.location.href = "/profesores";
-}
+async function sendMessage(){
 
-// Enviar mensaje con Enter o clic en botón
-async function sendMessage() {
     const input = document.getElementById("messageInput");
-    const message = input.value;
+    const message = input.value.trim();
 
-    if (message.trim() === "") return;
+    if(message === "") return;
 
     const chat = document.getElementById("chatMessages");
 
-    // MENSAJE DEL USUARIO
     const userMsg = document.createElement("div");
     userMsg.className = "user-message";
     userMsg.textContent = message;
@@ -134,47 +191,63 @@ async function sendMessage() {
 
     input.value = "";
 
-    // Mostrar un indicador de carga mientras esperamos la respuesta
-    const loadingMessage = document.createElement("div");
-    loadingMessage.className = "bot-message";
-    loadingMessage.textContent = "Cargando...";
-    chat.appendChild(loadingMessage);
+    const loading = document.createElement("div");
+    loading.className = "bot-message";
+    loading.textContent = "Catalina está escribiendo...";
+    chat.appendChild(loading);
 
     chat.scrollTop = chat.scrollHeight;
 
-    // LLAMADA AL BACKEND
-    const response = await fetch("/chat/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: message })
+    try{
+        const res = await fetch("/chat/send", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({message})
+        });
+
+        const data = await res.json();
+        loading.remove();
+
+        const botMsg = document.createElement("div");
+        botMsg.className = "bot-message";
+        botMsg.textContent = data.respuesta;
+
+        chat.appendChild(botMsg);
+
+    }catch(e){
+        loading.textContent = "Error conectando con el servidor";
+    }
+
+    chat.scrollTop = chat.scrollHeight;
+}
+
+// OTROS
+function contactarSoporte(){
+    window.open("https://portalweb.ucatolica.edu.co/administrativos/index.php/servicios/soporte-tecnico/administracion/tecnicos-de-soporte","_blank");
+}
+
+async function uploadFile(){
+    const file = document.getElementById('fileInput').files[0];
+
+    if(!file){
+        alert("Selecciona archivo");
+        return;
+    }
+
+    const form = new FormData();
+    form.append("file", file);
+
+    await fetch('/uploadfile/',{
+        method:"POST",
+        body:form
     });
 
-    const data = await response.json();
-
-    // Eliminar el mensaje de "Cargando..."
-    loadingMessage.remove();
-
-    // RESPUESTA DEL BOT
-    const botMsg = document.createElement("div");
-    botMsg.className = "bot-message";
-    botMsg.textContent = data.respuesta;
-
-    chat.appendChild(botMsg);
-
-    chat.scrollTop = chat.scrollHeight;
+    alert("Archivo subido");
 }
 
-// Permitir que el mensaje se envíe con Enter
-function checkEnter(event) {
-    if (event.key === "Enter") {
-        sendMessage();
-    }
-}
+// INIT
+document.addEventListener('DOMContentLoaded', cargarUsuario);
 
-// Ejecutar al cargar la página
-document.addEventListener('DOMContentLoaded', (event) => {
-    displayUserInfo(); // Mostrar el nombre del usuario si está logueado
-});
 </script>
 
 </body>
