@@ -1,113 +1,100 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Catalina | Registro</title>
-<link rel="stylesheet" href="/static/css/styles.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catalina | Registro</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-
 <body>
+    <header class="header">
+        <div class="brand">
+            <div class="brand-mark">
+                <img src="/static/images/Logosimple.png" alt="Logo Catalina">
+            </div>
+            <div class="brand-text">
+                <span class="brand-title">Catalina</span>
+                <span class="brand-subtitle">Universidad Católica de Colombia</span>
+            </div>
+        </div>
+    </header>
 
-<div class="container">
+    <main class="auth-container">
+        <section class="auth-visual auth-visual-soft">
+            <div class="visual-overlay"></div>
+            <div class="visual-content">
+                <span class="badge">Registro de usuario</span>
+                <h2>Crea tu cuenta y empieza a usar Catalina</h2>
+                <p>
+                    Regístrate para consultar servicios universitarios, resolver dudas frecuentes
+                    y mejorar tu experiencia dentro de la institución.
+                </p>
 
-  <div class="robot">
-    <img src="/static/images/Logosimple.png" alt="Catalina">
-  </div>
+                <div class="feature-list">
+                    <article class="feature-card">
+                        <div class="feature-line"></div>
+                        <div>
+                            <h3>Información útil</h3>
+                            <p>Accede a orientación institucional en cualquier momento.</p>
+                        </div>
+                    </article>
 
-  <div class="login">
+                    <article class="feature-card">
+                        <div class="feature-line"></div>
+                        <div>
+                            <h3>Experiencia clara</h3>
+                            <p>Navega en una interfaz simple, organizada y agradable visualmente.</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
 
-    <h1>Crear cuenta</h1>
-    <p>Catalina Chatbot</p>
+        <section class="auth-form-section">
+            <div class="login-card">
+                <div class="logo">
+                    <img src="/static/images/Logo.png" alt="Catalina">
+                </div>
 
-    <form id="registerForm">
+                <div class="login-text">
+                    <h1>Crear cuenta</h1>
+                    <p>Completa los datos para registrarte en la plataforma.</p>
+                </div>
 
-      <input
-        type="email"
-        id="username"
-        placeholder="Correo institucional"
-        required
-      >
+                <form id="registerForm" method="POST" action="/register">
+                    <div class="input-group">
+                        <label for="username">Correo</label>
+                        <input
+                            type="email"
+                            id="username"
+                            name="username"
+                            placeholder="ejemplo@ucatolica.edu.co"
+                            required
+                        />
+                    </div>
 
-      <input
-        type="password"
-        id="password"
-        placeholder="Contraseña"
-        required
-      >
+                    <div class="input-group">
+                        <label for="password">Contraseña</label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Crea una contraseña"
+                            required
+                        />
+                    </div>
 
-      <button type="submit">
-        Crear cuenta
-      </button>
+                    <button type="submit">Crear cuenta</button>
+                </form>
 
-    </form>
-
-    <div class="links">
-      ¿Ya tienes cuenta?
-      <a href="/">Iniciar sesión</a>
-    </div>
-
-  </div>
-
-</div>
-
-<script>
-
-document.addEventListener("DOMContentLoaded", function(){
-
-  const form = document.getElementById("registerForm")
-
-  form.addEventListener("submit", async function(e){
-
-    e.preventDefault()
-
-    const username = document.getElementById("username").value
-    const password = document.getElementById("password").value
-
-    try{
-
-      const response = await fetch("/register",{
-
-        method:"POST",
-
-        headers:{
-          "Content-Type":"application/json"
-        },
-
-        body:JSON.stringify({
-          username: username,
-          password: password
-        })
-
-      })
-
-      const data = await response.json()
-
-      if(response.ok){
-
-        alert(data.message || "Usuario creado correctamente")
-
-        // volver al login
-        window.location.href="/"
-
-      }else{
-
-        alert(data.detail || "Error al registrar usuario")
-
-      }
-
-    }catch(error){
-
-      alert("Error conectando con el servidor")
-
-    }
-
-  })
-
-})
-
-</script>
-
+                <div class="links">
+                    ¿Ya tienes cuenta? <a href="/">Iniciar sesión</a>
+                </div>
+            </div>
+        </section>
+    </main>
 </body>
 </html>

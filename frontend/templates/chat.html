@@ -1,125 +1,223 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Catalina Chat</title>
-
-<link rel="stylesheet" href="/static/css/chat.css">
-
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catalina Chat</title>
+    <link rel="stylesheet" href="/static/css/chat.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-
 <body>
+    <main class="layout">
+        <aside class="left-panel">
+            <div class="panel-card panel-dark">
+                <div class="panel-title">
+                    <h2><i class="fa-solid fa-folder-open"></i> Archivos</h2>
+                    <p>Sube y visualiza los documentos relacionados con tu consulta.</p>
+                </div>
 
-<div class="layout">
+                <div class="file-box">
+                    <label for="fileInput" class="file-label">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        Seleccionar archivo
+                    </label>
+                    <input type="file" id="fileInput" />
+                    <span id="fileName">Ningún archivo seleccionado</span>
+                    <button class="upload" type="button" id="uploadBtn">
+                        Subir archivo
+                    </button>
+                </div>
 
-<!-- ================= LEFT PANEL ================= -->
+                <div class="uploaded-files-section">
+                    <h3>Archivos cargados</h3>
+                    <div class="uploaded-files-list" id="uploadedFilesList">
+                        <p class="empty-files">Aún no has cargado archivos.</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
 
-<div class="left-panel">
+        <section class="chat-panel">
+            <header class="chat-header">
+                <div class="chat-brand">
+                    <div class="chat-brand-icon">
+                        <img src="/static/images/Logosimple.png" alt="Logo Catalina">
+                    </div>
+                    <div class="chat-brand-text">
+                        <span class="chat-title">Catalina Chatbot</span>
+                        <span class="chat-subtitle">Asistente de la Universidad Católica de Colombia</span>
+                    </div>
+                </div>
 
-<h2>Archivos</h2>
+                <div class="user-profile">
+                    <div class="avatar" onclick="toggleDropdown()">JP</div>
+                    <div class="dropdown" id="dropdownMenu">
+                        <p>Opciones de usuario</p>
+                        <button type="button" onclick="toggleDarkMode()">
+                            <i class="fa-solid fa-moon"></i> Cambiar tema
+                        </button>
+                        <button type="button" onclick="window.location.href='/'">
+                            <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+                        </button>
+                    </div>
+                </div>
+            </header>
 
-<button class="upload">Subir archivo</button>
+            <div class="chat-messages" id="chatMessages">
+                <div class="bot-message">
+                    <span class="message-badge">Catalina</span>
+                    <p class="message-text">
+                        Hola, soy Catalina. Estoy lista para ayudarte con información
+                        institucional, orientación y consultas frecuentes de la universidad.
+                    </p>
+                </div>
+            </div>
 
-<ul class="files">
-<li>📄 Documento.pdf</li>
-<li>📊 Excel.xlsx</li>
-<li>🖼 Imagen.png</li>
-<li>🌐 Página web</li>
-</ul>
+            <div class="chat-input">
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-pen"></i>
+                    <input
+                        type="text"
+                        id="messageInput"
+                        placeholder="Escribe tu mensaje aquí..."
+                    />
+                </div>
+                <button class="send-btn" id="sendBtn" type="button">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </section>
 
-</div>
+        <aside class="right-panel">
+            <div class="panel-card panel-light">
+                <div class="panel-title">
+                    <h2><i class="fa-solid fa-screwdriver-wrench"></i> Herramientas</h2>
+                    <p>Accesos rápidos para futuras funcionalidades del sistema.</p>
+                </div>
 
+                <div class="tool-list">
+                    <button type="button"><i class="fa-solid fa-file-word"></i> Generar Word</button>
+                    <button type="button"><i class="fa-solid fa-file-excel"></i> Crear Excel</button>
+                    <button type="button"><i class="fa-solid fa-file-pdf"></i> Exportar PDF</button>
+                    <button type="button"><i class="fa-solid fa-file-powerpoint"></i> Crear presentación</button>
+                </div>
+            </div>
+        </aside>
+    </main>
 
-<!-- ================= CHAT ================= -->
+    <script>
+        const messageInput = document.getElementById("messageInput");
+        const sendBtn = document.getElementById("sendBtn");
+        const chatMessages = document.getElementById("chatMessages");
+        const fileInput = document.getElementById("fileInput");
+        const fileName = document.getElementById("fileName");
+        const uploadBtn = document.getElementById("uploadBtn");
+        const uploadedFilesList = document.getElementById("uploadedFilesList");
 
-<div class="chat-panel">
+        function toggleDropdown() {
+            const dropdown = document.getElementById("dropdownMenu");
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        }
 
-<div class="chat-header">
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+        }
 
-<img src="/static/images/Logosimple.png">
-<span>Catalina Chatbot</span>
+        function createUserMessage(text) {
+            const message = document.createElement("div");
+            message.className = "user-message";
+            message.innerHTML = `
+                <span class="message-badge user-badge">Tú</span>
+                <p class="message-text"></p>
+            `;
+            message.querySelector(".message-text").textContent = text;
+            return message;
+        }
 
-</div>
+        function createBotMessage(text) {
+            const message = document.createElement("div");
+            message.className = "bot-message";
+            message.innerHTML = `
+                <span class="message-badge">Catalina</span>
+                <p class="message-text"></p>
+            `;
+            message.querySelector(".message-text").textContent = text;
+            return message;
+        }
 
-<div class="chat-messages" id="chatMessages">
+        function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text) return;
 
-<div class="bot-message">
-Hola 👋 soy Catalina, tu asistente de la Universidad Católica.
-</div>
+            chatMessages.appendChild(createUserMessage(text));
+            messageInput.value = "";
+            chatMessages.scrollTop = chatMessages.scrollHeight;
 
-</div>
+            setTimeout(() => {
+                chatMessages.appendChild(
+                    createBotMessage("Gracias por tu mensaje. Esta es una respuesta temporal mientras integran la lógica completa del chatbot.")
+                );
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 500);
+        }
 
-<div class="chat-input">
+        sendBtn.addEventListener("click", sendMessage);
+        messageInput.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+                sendMessage();
+            }
+        });
 
-<input 
-type="text"
-id="messageInput"
-placeholder="Escribe tu mensaje..."
->
+        fileInput.addEventListener("change", function () {
+            fileName.textContent = this.files.length > 0
+                ? this.files[0].name
+                : "Ningún archivo seleccionado";
+        });
 
-<button onclick="sendMessage()">
-Enviar
-</button>
+        uploadBtn.addEventListener("click", function () {
+            if (!fileInput.files.length) return;
 
-</div>
+            const file = fileInput.files[0];
 
-</div>
+            const emptyMessage = uploadedFilesList.querySelector(".empty-files");
+            if (emptyMessage) emptyMessage.remove();
 
+            const item = document.createElement("div");
+            item.className = "uploaded-file-item";
+            item.innerHTML = `
+                <div class="file-info">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <span>${file.name}</span>
+                </div>
+                <button class="delete-file-btn" type="button">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            `;
 
-<!-- ================= TOOLS ================= -->
+            item.querySelector(".delete-file-btn").addEventListener("click", function () {
+                item.remove();
 
-<div class="right-panel">
+                if (!uploadedFilesList.children.length) {
+                    uploadedFilesList.innerHTML = '<p class="empty-files">Aún no has cargado archivos.</p>';
+                }
+            });
 
-<h2>Herramientas</h2>
+            uploadedFilesList.appendChild(item);
+            fileInput.value = "";
+            fileName.textContent = "Ningún archivo seleccionado";
+        });
 
-<button>Generar Word</button>
-<button>Crear Excel</button>
-<button>Exportar PDF</button>
-<button>Crear presentación</button>
+        document.addEventListener("click", function (e) {
+            const profile = document.querySelector(".user-profile");
+            const dropdown = document.getElementById("dropdownMenu");
 
-</div>
-
-</div>
-
-<script>
-
-function sendMessage(){
-
-const input = document.getElementById("messageInput")
-const message = input.value
-
-if(message.trim() === "") return
-
-const chat = document.getElementById("chatMessages")
-
-const userMsg = document.createElement("div")
-userMsg.className="user-message"
-userMsg.textContent = message
-
-chat.appendChild(userMsg)
-
-input.value=""
-
-setTimeout(()=>{
-
-const botMsg = document.createElement("div")
-botMsg.className="bot-message"
-botMsg.textContent="Catalina está trabajando en tu solicitud..."
-
-chat.appendChild(botMsg)
-
-chat.scrollTop = chat.scrollHeight
-
-},800)
-
-}
-
-</script>
-
+            if (!profile.contains(e.target)) {
+                dropdown.style.display = "none";
+            }
+        });
+    </script>
 </body>
-
 </html>

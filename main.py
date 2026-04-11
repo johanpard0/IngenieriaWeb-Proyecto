@@ -1,21 +1,17 @@
-from fastapi import FastAPI, Request, HTTPException, Query
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Request, HTTPException, Query, Form
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from backend.schemas import UserCreate, UserLogin
+from backend.schemas import UserCreate
 from backend.auth import register_user, login_user
 from backend.documento_schema import Documento
 
 app = FastAPI(title="Catalina API")
 
-# static
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
-
-# templates
 templates = Jinja2Templates(directory="frontend/templates")
 
-# "Base de datos" temporal en memoria
 documentos_db = []
 
 
@@ -25,40 +21,47 @@ documentos_db = []
 
 @app.get("/", response_class=HTMLResponse)
 def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse(request, "login.html", {})
 
 
 @app.get("/register", response_class=HTMLResponse)
 def register_page(request: Request):
-    return templates.TemplateResponse("register.html", {"request": request})
+    return templates.TemplateResponse(request, "register.html", {})
 
 
 @app.get("/chat", response_class=HTMLResponse)
 def chat_page(request: Request):
-    return templates.TemplateResponse("chat.html", {"request": request})
+    return templates.TemplateResponse(request, "chat.html", {})
 
 
 @app.post("/register")
-def register(user: UserCreate):
-    return register_user(user)
+def register(
+    username: str = Form(...),
+    password: str = Form(...)
+):
+    user = UserCreate(username=username, password=password)
+    register_user(user)
+    return RedirectResponse(url="/", status_code=303)
 
 
 @app.post("/login")
-def login(user: UserLogin):
-    return login_user(user.username, user.password)
+def login(
+    username: str = Form(...),
+    password: str = Form(...)
+):
+    login_user(username, password)
+    return RedirectResponse(url="/chat", status_code=303)
 
 
 # =========================
 # RUTAS NUEVAS DEL TALLER
 # =========================
 
-# 1. Endpoint lectura total (GET)
 @app.get("/documentos")
 def obtener_documentos():
     return documentos_db
 
 
-# 2. Endpoint creación (POST)
 @app.post("/documentos")
 def crear_documento(documento: Documento):
     for doc in documentos_db:
@@ -72,7 +75,6 @@ def crear_documento(documento: Documento):
     }
 
 
-# 5. Filtrado dinámico (Query Parameter)
 @app.get("/documentos/filtro/buscar")
 def filtrar_documentos(
     categoria: str | None = Query(default=None, description="Filtrar por categoría"),
@@ -95,8 +97,6 @@ def filtrar_documentos(
     return resultados
 
 
-# 3. Endpoint búsqueda específica (Path Parameter)
-# 4. Lógica de Error con HTTPException 404
 @app.get("/documentos/{id}")
 def obtener_documento_por_id(id: int):
     for doc in documentos_db:
