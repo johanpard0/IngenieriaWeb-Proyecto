@@ -12,6 +12,8 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from starlette.middleware.sessions import SessionMiddleware
 from authlib.integrations.starlette_client import OAuth
+from sqlalchemy import text
+from backend.database import engine
 
 from backend.schemas import UserCreate, UserLogin, SocialUserCreate
 from backend.auth import register_user, login_user, register_or_get_social_user
@@ -252,42 +254,287 @@ def obtener_documento_por_id(id: int):
 
 class ChatMessage(BaseModel):
     message: str
+    username: str | None = None
+    chat_id: int | None = None
+
+
+def generar_respuesta_chat(user_message: str):
+    if "hola" in user_message or "buenos días" in user_message or "hey" in user_message:
+        return random.choice(responses["saludos"]), "saludo"
+
+    elif "salon" in user_message or "salón" in user_message:
+        if "a101" in user_message:
+            return "El salón A101 está en el bloque A, primer piso.", "salon"
+        elif "b202" in user_message:
+            return "El salón B202 está en el bloque B, segundo piso.", "salon"
+        else:
+            return random.choice(responses["salones"]), "salon"
+
+    elif "profesor" in user_message or "quien dicta" in user_message:
+        if "bases de datos" in user_message:
+            return "Bases de Datos la dicta el profesor Carlos Pérez en el salón A101.", "profesor"
+        elif "redes" in user_message:
+            return "Redes la dicta la profesora Ana Gómez en el salón B202.", "profesor"
+        else:
+            return random.choice(responses["profesores"]), "profesor"
+
+    elif "horario" in user_message:
+        return random.choice(responses["horarios"]), "horario"
+
+    elif "perfil" in user_message:
+        return "Perfil de usuario: Usuario activo.\nL2: Puedes ver opciones en el menú.", "perfil"
+
+    elif "configuracion" in user_message or "configuración" in user_message:
+        return "Configuración: puedes cambiar contraseña, idioma y más opciones próximamente.", "configuracion"
+
+    elif "historial" in user_message:
+        return "Historial disponible próximamente.", "historial"
+
+    elif "formulario" in user_message:
+        return "Usa el botón de formulario para hacer solicitudes.", "formulario"
+
+    else:
+        return "No entendí tu mensaje.\nL3: Intenta con: ¿Dónde queda el salón A101?", "general"
+
+
+def guardar_interaccion_chat(username: str | None, chat_id: int | None, pregunta: str, respuesta: str, tipo_consulta: str):
+    correo_usuario = username or "invitado@catalina.local"
+
+    with engine.begin() as conn:
+        estudiante = conn.execute(
+            text("""
+                SELECT id_estudiante
+                FROM estudiantes
+                WHERE LOWER(correo) = LOWER(:correo)
+                LIMIT 1;
+            """),
+            {"correo": correo_usuario}
+        ).mappings().first()
+
+        if estudiante:
+            id_estudiante = estudiante["id_estudiante"]
+        else:
+            id_estudiante = conn.execute(
+                text("""
+                    INSERT INTO estudiantes (
+                        nombre,
+                        cedula,
+                        correo,
+                        password_hash,
+                        provider,
+                        provider_id,
+                        activo
+                    )
+                    VALUES (
+                        'Usuario invitado',
+                        '',
+                        :correo,
+                        '',
+                        'system',
+                        '',
+                        TRUE
+                    )
+                    RETURNING id_estudiante;
+                """),
+                {"correo": correo_usuario}
+            ).scalar_one()
+
+        chat_existente = None
+
+        if chat_id:
+            chat_existente = conn.execute(
+                text("""
+                    SELECT id_chat
+                    FROM chats
+                    WHERE id_chat = :id_chat
+                      AND id_estudiante = :id_estudiante
+                    LIMIT 1;
+                """),
+                {
+                    "id_chat": chat_id,
+                    "id_estudiante": id_estudiante
+                }
+            ).mappings().first()
+
+        if chat_existente:
+            id_chat = chat_existente["id_chat"]
+        else:
+            id_chat = conn.execute(
+                text("""
+                    INSERT INTO chats (
+                        id_estudiante,
+                        titulo,
+                        estado,
+                        cantidad_mensajes
+                    )
+                    VALUES (
+                        :id_estudiante,
+                        :titulo,
+                        'abierto',
+                        0
+                    )
+                    RETURNING id_chat;
+                """),
+                {
+                    "id_estudiante": id_estudiante,
+                    "titulo": pregunta[:80] if pregunta else "Nuevo chat"
+                }
+            ).scalar_one()
+
+        id_mensaje_usuario = conn.execute(
+            text("""
+                INSERT INTO mensajes (
+                    id_chat,
+                    emisor,
+                    contenido,
+                    tipo_mensaje,
+                    leido
+                )
+                VALUES (
+                    :id_chat,
+                    'estudiante',
+                    :contenido,
+                    'texto',
+                    TRUE
+                )
+                RETURNING id_mensaje;
+            """),
+            {
+                "id_chat": id_chat,
+                "contenido": pregunta
+            }
+        ).scalar_one()
+
+        id_mensaje_respuesta = conn.execute(
+            text("""
+                INSERT INTO mensajes (
+                    id_chat,
+                    emisor,
+                    contenido,
+                    tipo_mensaje,
+                    leido
+                )
+                VALUES (
+                    :id_chat,
+                    'catalina',
+                    :contenido,
+                    'texto',
+                    TRUE
+                )
+                RETURNING id_mensaje;
+            """),
+            {
+                "id_chat": id_chat,
+                "contenido": respuesta
+            }
+        ).scalar_one()
+
+        conn.execute(
+            text("""
+                INSERT INTO consultas_chat (
+                    id_chat,
+                    id_estudiante,
+                    id_mensaje,
+                    tipo_consulta,
+                    pregunta_original,
+                    respuesta_generada,
+                    nivel_confianza,
+                    resuelta
+                )
+                VALUES (
+                    :id_chat,
+                    :id_estudiante,
+                    :id_mensaje,
+                    :tipo_consulta,
+                    :pregunta_original,
+                    :respuesta_generada,
+                    1.00,
+                    TRUE
+                );
+            """),
+            {
+                "id_chat": id_chat,
+                "id_estudiante": id_estudiante,
+                "id_mensaje": id_mensaje_usuario,
+                "tipo_consulta": tipo_consulta,
+                "pregunta_original": pregunta,
+                "respuesta_generada": respuesta
+            }
+        )
+
+        conn.execute(
+            text("""
+                UPDATE chats
+                SET cantidad_mensajes = cantidad_mensajes + 2,
+                    fecha_actualizacion = CURRENT_TIMESTAMP
+                WHERE id_chat = :id_chat;
+            """),
+            {"id_chat": id_chat}
+        )
+
+        return {
+            "id_estudiante": id_estudiante,
+            "id_chat": id_chat,
+            "id_mensaje_usuario": id_mensaje_usuario,
+            "id_mensaje_respuesta": id_mensaje_respuesta
+        }
 
 
 @app.post("/chat/send")
 async def chatbot_response(chat_message: ChatMessage):
-    user_message = chat_message.message.lower()
+    user_message_original = chat_message.message
+    user_message = user_message_original.lower()
 
-    if "hola" in user_message or "buenos días" in user_message or "hey" in user_message:
-        response = random.choice(responses["saludos"])
-    elif "salon" in user_message or "salón" in user_message:
-        if "a101" in user_message:
-            response = "El salón A101 está en el bloque A, primer piso."
-        elif "b202" in user_message:
-            response = "El salón B202 está en el bloque B, segundo piso."
-        else:
-            response = random.choice(responses["salones"])
-    elif "profesor" in user_message or "quien dicta" in user_message:
-        if "bases de datos" in user_message:
-            response = "Bases de Datos la dicta el profesor Carlos Pérez en el salón A101."
-        elif "redes" in user_message:
-            response = "Redes la dicta la profesora Ana Gómez en el salón B202."
-        else:
-            response = random.choice(responses["profesores"])
-    elif "horario" in user_message:
-        response = random.choice(responses["horarios"])
-    elif "perfil" in user_message:
-        response = "Perfil de usuario: Usuario activo. Puedes ver opciones en el menú."
-    elif "configuracion" in user_message or "configuración" in user_message:
-        response = "Configuración: puedes cambiar contraseña, idioma y más opciones próximamente."
-    elif "historial" in user_message:
-        response = "Historial disponible próximamente."
-    elif "formulario" in user_message:
-        response = "Usa el botón de formulario para hacer solicitudes."
-    else:
-        response = "No entendí tu mensaje. Intenta con: ¿Dónde queda el salón A101?"
+    response, tipo_consulta = generar_respuesta_chat(user_message)
 
-    return {"respuesta": response}
+    try:
+        datos_guardados = guardar_interaccion_chat(
+            username=chat_message.username,
+            chat_id=chat_message.chat_id,
+            pregunta=user_message_original,
+            respuesta=response,
+            tipo_consulta=tipo_consulta
+        )
+
+        return {
+            "respuesta": response,
+            "guardado": True,
+            "id_chat": datos_guardados["id_chat"],
+            "id_mensaje_usuario": datos_guardados["id_mensaje_usuario"],
+            "id_mensaje_respuesta": datos_guardados["id_mensaje_respuesta"]
+        }
+
+    except Exception as e:
+        return {
+            "respuesta": response,
+            "guardado": False,
+            "error": str(e)
+        }
+
+
+@app.get("/health/db")
+def health_db():
+    try:
+        with engine.connect() as conn:
+            total_tablas = conn.execute(
+                text("""
+                    SELECT COUNT(*)
+                    FROM information_schema.tables
+                    WHERE table_schema = 'public';
+                """)
+            ).scalar()
+
+        return {
+            "status": "ok",
+            "message": "Conexión exitosa a PostgreSQL",
+            "total_tablas": total_tablas
+        }
+
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": str(e)
+        }
 
 @app.get("/files")
 def list_files():
